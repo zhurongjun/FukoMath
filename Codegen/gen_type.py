@@ -72,21 +72,35 @@ def gen_constructor_vector(base_type_name:str, size:int) -> str:
     return result
 
 def gen_type_code(base_type_name:str, implicit_convert_types:List[str] = []) ->str:
-    result = ""
+    result = "#pragma once\n"
   
-    # gen forward delcare 
-    for i in range(2, 5):
-        result += str.format("struct {base_type}{dimension};\n", base_type = base_type_name, dimension  = i)
-    result += "\n"
-
-
     # gen structures 
     for i in range(2, 5):
         # begin struct 
         result += str.format("struct {base_type}{dimension}\n", base_type = base_type_name, dimension = i) + "{\n"
         
         # gen constructor 
+        result += "\t// constructor\n"
         result += gen_constructor_vector(base_type_name, i)
+
+        # gen access operator 
+        result += "\n\t// access operator"
+        result += str.format('''
+    {base_type}& operator[](int index) noexcept {{ return pad[index]; }}
+	{base_type} operator[](int index) const noexcept {{ return pad[index]; }}
+    '''
+    , base_type = base_type_name)
+
+        # gen implicit convert operator 
+        result += "\n\t// implicit convert operator\n"
+        for implicit_type in implicit_convert_types:
+            pad_assign_str = "pad[0]"
+            for pad_pos in range(1, i):
+                pad_assign_str += str.format(", pad[{pad_pos}]", pad_pos = pad_pos)
+            result += str.format("\toperator {base_type}{dimension}() const noexcept {{ return {base_type}{dimension}({pad_assign}); }}\n"
+            , base_type = implicit_type
+            , dimension = i
+            , pad_assign = pad_assign_str)
 
         # gen union 
         result += str.format('''

@@ -1,6 +1,8 @@
 from typing import List
 import gen_swizzle
 import gen_type
+import config
+import shutil
 import codegen_util as util
 from pathlib import Path
 
@@ -19,10 +21,9 @@ if __name__ == "__main__" :
     if math_dir.exists() == False:
         math_dir.mkdir(parents=True)
 
-    # write swizzle.h 
-    f = (swizzle_dir / "swizzle.h").open("w+")
-    f.write(util.swizzle_template)
-    f.close()
+    # copy swizzle.h 
+    swizzle_template_path = root_dir / config.swizzle_template_path
+    shutil.copyfile(str(swizzle_template_path), str(swizzle_dir / "swizle.h"))
 
     # gen vector swizzle 
     for src_size in range(2, 5):
@@ -40,9 +41,19 @@ if __name__ == "__main__" :
                 f.write(gen_swizzle.gen_swizzle_code_matrix(row_size, col_size))
                 f.close()
 
+    # gen common file  
+
     # gen vector types 
-    f = (types_dir / "float.h").open("w+")
-    f.write(gen_type.gen_type_code("float"))
-    f.close()
+    for type in config.vector_type_list:
+        f = (types_dir / (type + ".h")).open("w+")
+        implicit_types = config.vector_type_list.copy()
+        implicit_types.remove(type)
+        f.write(gen_type.gen_type_code(type, implicit_types))
+        f.close()
 
+    # gen vector convert 
 
+    # gen matrix types 
+
+    # gen math 
+    

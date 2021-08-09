@@ -174,8 +174,10 @@ if __name__ == "__main__" :
         f.write(gen_math.gen_vector_increment_decrement(config.arithmetic_type_list))
 
         # arithmetic 
+        f.write(gen_math.gen_vector_arithmetic(config.arithmetic_type_list))
 
         # arithmetic assign 
+        f.write(gen_math.gen_vector_arithmetic_assign(config.arithmetic_type_list))
 
         # end namespace 
         if config.enable_namespace:

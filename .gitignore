@@ -30,4 +30,9 @@
 *.exe
 *.out
 *.app
+
+# python 
 Codegen/__pycache__/
+
+# premake 
+!premake/**

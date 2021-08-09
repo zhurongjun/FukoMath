@@ -129,8 +129,11 @@ if __name__ == "__main__" :
         if config.enable_namespace:
             f.write(begin_namespace())
 
-        # implicit convert 
+        # implicit convertions 
         f.write(gen_dependency.gen_implicit_conversion(config.vector_type_list))
+
+        # asxxx convertions 
+        f.write(gen_dependency.gen_asxxx_conversion(config.asxxx_type_list))
 
         # end namespace 
         if config.enable_namespace:

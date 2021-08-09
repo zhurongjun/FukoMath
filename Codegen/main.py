@@ -97,7 +97,7 @@ if __name__ == "__main__" :
 
         # write file 
         with (types_dir / (type + ".h")).open("w+") as f:
-            f.write('''#pragma once\n#include "../fuko_math_forward.h"\n\n''')
+            f.write('''#pragma once\n#include "../fuko_math_forward.h"\n#include "../Swizzle/swizzle.h"\n\n''')
             
             # begin namespace 
             if config.enable_namespace:

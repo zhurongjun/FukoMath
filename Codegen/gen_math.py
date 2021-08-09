@@ -14,7 +14,7 @@ def gen_vector_increment_decrement(type_list:List[str]) -> str:
                     increment_code += str.format("{op}v.pad[{idx}]; ", op = op, idx = idx)
 
                 # gen forward increment code 
-                result += str.format("{inline_marco} {type}{dimension}& operator{op}({type}{dimension}& v) {{ {increment_code}return v; }}\n"
+                result += str.format("{inline_marco} {type}{dimension}& operator{op}({type}{dimension}& v) noexcept {{ {increment_code}return v; }}\n"
                 , op = op
                 , inline_marco = config.inline_marco
                 , type = type
@@ -22,7 +22,7 @@ def gen_vector_increment_decrement(type_list:List[str]) -> str:
                 , increment_code = increment_code) 
 
                 # gen deferred increment code 
-                result += str.format("{inline_marco} {type}{dimension} operator{op}({type}{dimension}& v, int) {{ {type}{dimension} old_val = v; {op}v; return old_val; }}\n"
+                result += str.format("{inline_marco} {type}{dimension} operator{op}({type}{dimension}& v, int) noexcept {{ {type}{dimension} old_val = v; {op}v; return old_val; }}\n"
                 , op = op
                 , inline_marco = config.inline_marco
                 , type = type
@@ -45,7 +45,7 @@ def gen_vector_arithmetic(type_list:List[str]) -> str:
                     op_code += str.format(", lsh[{idx}] {op} rsh[{idx}]", idx = idx, op = op)
                 
                 # gen final code 
-                result += str.format("{inline_marco} {type}{dimension} operator {op} (const {type}{dimension}& lsh, const {type}{dimension}& rsh) {{ return {type}{dimension}({op_code}); }}\n"
+                result += str.format("{inline_marco} {type}{dimension} operator {op} (const {type}{dimension}& lsh, const {type}{dimension}& rsh) noexcept {{ return {type}{dimension}({op_code}); }}\n"
                 , inline_marco = config.inline_marco
                 , type = type
                 , dimension = dimension
@@ -68,7 +68,7 @@ def gen_vector_arithmetic(type_list:List[str]) -> str:
                     op_code += str.format(", lsh[{idx}] {op} rsh[{idx}]", idx = idx, op = "%")
             
             # gen final code 
-            result += str.format("{inline_marco} {type}{dimension} operator {op} (const {type}{dimension}& lsh, const {type}{dimension}& rsh) {{ return {type}{dimension}({op_code}); }}\n"
+            result += str.format("{inline_marco} {type}{dimension} operator {op} (const {type}{dimension}& lsh, const {type}{dimension}& rsh) noexcept {{ return {type}{dimension}({op_code}); }}\n"
             , inline_marco = config.inline_marco
             , type = type
             , dimension = dimension
@@ -81,6 +81,16 @@ def gen_vector_arithmetic(type_list:List[str]) -> str:
 def gen_vector_arithmetic_assign(type_list:List[str]) -> str:
     result = ""
     
+    for type in type_list:
+        for op in ["+", "-", "*", "/", "%"]:
+            result += str.format("// {type} {op}= {type}\n", type = type, op = op)
+            for dimension in range(2, 5):
+                result += str.format("{inline_marco} {type}{dimension}& operator {op}= ({type}{dimension}& lsh, const {type}{dimension}& rsh) noexcept {{ lsh = lsh {op} rsh; return lsh; }}\n"
+                , inline_marco = config.inline_marco
+                , type = type
+                , dimension = dimension
+                , op = op)
+
     return result
 
 # gen vector operator + - * / %, and assign version 

@@ -36,3 +36,6 @@ Codegen/__pycache__/
 
 # premake 
 !premake/**
+
+# workspace 
+workspace/**

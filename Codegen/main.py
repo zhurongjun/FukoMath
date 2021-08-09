@@ -1,6 +1,7 @@
 from typing import List
 import gen_swizzle
 import gen_type
+import gen_dependency
 import config
 import shutil
 import sys
@@ -80,9 +81,10 @@ if __name__ == "__main__" :
         
         # write 
         with forward_file_path.open("w+") as f:
-            f.write(str.format(forward_template, 
-            forward_declares = gen_type.gen_forward_declare_vector(config.vector_type_list) 
-            + gen_type.gen_forward_declare_matrix(config.matrix_type_list)))
+            f.write(str.format(forward_template
+            , forward_declares = gen_type.gen_forward_declare_vector(config.vector_type_list) 
+            + gen_type.gen_forward_declare_matrix(config.matrix_type_list)
+            , math_namespace = config.math_namespace))
     else:
         print("lost forward template file\n")
         exit()
@@ -96,7 +98,7 @@ if __name__ == "__main__" :
         with (types_dir / (type + ".h")).open("w+") as f:
             f.write('''#pragma once\n#include "../fuko_math_forward.h"\n\n''')
             
-            # end namespace 
+            # begin namespace 
             if config.enable_namespace:
                 f.write(begin_namespace())
             
@@ -108,14 +110,31 @@ if __name__ == "__main__" :
             if type in config.matrix_type_list:
                 f.write(gen_type.gen_type_code_matrix(type))
 
-            # begin namespace 
+            # end namespace 
             if config.enable_namespace:
                 f.write(end_namespace())
     
     # gen dependencies 
     dependencies_file_path = cpp_root_dir / "fuko_math_dependencies.h"
     with dependencies_file_path.open("w+") as f:
-        pass
+        # add pragma and forward 
+        f.write('''#pragma once\n#include "fuko_math_forward.h"\n''')
+        
+        # add type include 
+        for type in config.vector_type_list:
+            f.write(str.format('''#include "Types/{type}.h"\n''', type = type))
+        f.write("\n")
+
+        # begin namespace 
+        if config.enable_namespace:
+            f.write(begin_namespace())
+
+        # implicit convert 
+        f.write(gen_dependency.gen_implicit_conversion(config.vector_type_list))
+
+        # end namespace 
+        if config.enable_namespace:
+            f.write(end_namespace())
 
     # gen deferred file 
     deferred_template_file_path = codgen_root_dir / config.deferred_file_template_path

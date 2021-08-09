@@ -15,8 +15,15 @@
 
 #endif
 
-// forward declares 
-{forward_declares}
 // TODO. simd define 
 
 // TODO. disable warning 
+
+namespace {math_namespace}
+{{
+// type alias 
+using uint = unsigned int;
+
+// forward declares 
+{forward_declares}
+}}

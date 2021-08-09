@@ -36,6 +36,9 @@ if __name__ == "__main__" :
 
     # clean up option 
     if "cleanup" in sys.argv:
+        workspace_dir =  project_root_dir / "workspace"
+        if workspace_dir.exists():
+            shutil.rmtree(workspace_dir)
         exit()
 
     # gen dir 

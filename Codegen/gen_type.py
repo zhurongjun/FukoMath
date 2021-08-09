@@ -55,9 +55,11 @@ def recursive_gen_constructor(base_type_name:str, raw_size:int, remain_size:int,
 def gen_constructor_vector(base_type_name:str, size:int) -> str:
     result = ""
     
+    type_name = base_type_name + str(size)
+
     # gen basic swizzle init 
-    result += "\t" + config.inline_marco + " " + base_type_name + str(size) + "() : pad { 0 } {}\n"
-    result += "\t" + config.inline_marco + " " + base_type_name + str(size) + "(float n) : pad { "
+    result += str.format("\t{inline_marco} {type_name}() : pad {{ 0 }}{{}}\n", inline_marco = config.inline_marco, type_name = type_name)
+    result += str.format("\t{inline_marco} {type_name}({base_type} n) : pad {{ ", inline_marco = config.inline_marco, type_name = type_name, base_type = base_type_name)
     for i in range(0, size):
         result += "n, "
     result = result[0:-2]
@@ -137,12 +139,56 @@ def gen_type_code_matrix(base_type_name:str) -> str:
             if row_size == 1 and col_size == 1:
                 continue
             else:
+                matrix_type_name = str.format("{base_type}{row_size}x{col_size}", base_type = base_type_name, row_size = row_size, col_size = col_size)
+
                 # begin struct 
-                result += str.format("struct {base_type}{row_size}x{col_size}\n{{\n", base_type = base_type_name, row_size = row_size, col_size = col_size)
+                result += str.format("struct {matrix_name}\n{{\n", matrix_name = matrix_type_name)
 
                 # gen default constructor 
+                result += "\t// constructor\n"
+                result += str.format("\t{inline_marco} {matrix_name}() : pad {{ 0 }} {{}}\n", inline_marco = config.inline_marco, matrix_name = matrix_type_name)
+                result += str.format("\t{inline_marco} {matrix_name}({base_type} n) : pad {{", inline_marco = config.inline_marco, base_type = base_type_name, matrix_name = matrix_type_name)
+                for i in range(0, row_size * col_size):
+                    result += "n, "
+                result = result[0:-2]
+                result += " } {}\n" 
 
                 # gen vector constructor 
+                param_str = ""
+                assign_str = ""
+
+                for row in range(0, row_size):
+                    if col_size == 1:
+                        param_str += str.format("{base_type} vec{row}, ", base_type = base_type_name, row = row)
+                        assign_str += str.format("vec{row}, ", row = row)
+                    else:
+                        param_str += str.format("{base_type}{col_size} vec{row}, ", base_type = base_type_name, col_size = col_size, row = row)
+                        for vec_idx in range(0, col_size):
+                            assign_str += str.format("vec{row}[{vec_idx}], ", row = row, vec_idx = vec_idx)
+
+                param_str = param_str[0:-2]
+                assign_str = assign_str[0:-2]
+                result += str.format("\t{inline_marco} {matrix_name}({param_str}) : pad {{ {assign_str} }} {{}}\n"
+                    , inline_marco = config.inline_marco
+                    , matrix_name = matrix_type_name
+                    , param_str = param_str
+                    , assign_str = assign_str)
+
+                # gen val constructor 
+                param_str = ""
+                assign_str = ""
+                for row in range(0, row_size):
+                    for col in range(0, col_size):
+                        param_str += str.format("{base_type} _{row}{col}, ", base_type = base_type_name, row = row, col = col)
+                        assign_str += str.format("_{row}{col}, ", row = row, col = col)
+                param_str = param_str[0:-2]
+                assign_str = assign_str[0:-2]
+
+                result += str.format("\t{inline_marco} {matrix_name}({param_str}) : pad {{ {assign_str} }} {{}}\n\n"
+                , inline_marco = config.inline_marco
+                , matrix_name = matrix_type_name
+                , param_str = param_str
+                , assign_str = assign_str)
 
                 # gen access operator 
                 result += "\t// access operator"

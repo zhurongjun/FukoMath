@@ -10,6 +10,12 @@ make_script_template_path = "./Templates/premake.lua"
 vector_type_list = ["float", "double", "int", "uint", "bool"]
 matrix_type_list = ["float", "double", "int", "uint"]
 asxxx_type_list = ["float", "int", "uint"]
+arithmetic_type_list = ["float", "double", "int", "uint"]
+implicit_convert_dic =  { "float":  ["double", "bool"]
+                        , "double": ["bool"]
+                        , "int":    ["double", "float", "bool", "uint"]
+                        , "uint":   ["double", "float", "bool"]
+                        , "bool":   ["double", "float", "int", "uint"] }
 
 # enviroment 
 enable_namespace = True

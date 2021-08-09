@@ -1,6 +1,7 @@
 from typing import List
 import gen_swizzle
 import gen_type
+import gen_math
 import gen_dependency
 import config
 import shutil
@@ -155,7 +156,31 @@ if __name__ == "__main__" :
         print("lost deferred template file\n")
         exit()
 
-    # gen math 
+    # gen util math 
+    with (math_dir/ "util_math.h").open("w+") as f:
+        # add pragma and forward 
+        f.write('''#pragma once\n#include "fuko_math_forward.h"\n''')
+        
+        # add type include 
+        for type in config.vector_type_list:
+            f.write(str.format('''#include "Types/{type}.h"\n''', type = type))
+        f.write("\n")
+
+        # begin namespace 
+        if config.enable_namespace:
+            f.write(begin_namespace())
+        
+        # increment & decrement 
+        f.write(gen_math.gen_vector_increment_decrement(config.arithmetic_type_list))
+
+        # arithmetic 
+
+        # arithmetic assign 
+
+        # end namespace 
+        if config.enable_namespace:
+            f.write(end_namespace())
+
     for type in full_type_list :
         math_file_path = math_dir / str.format("{base_type}_math.h", base_type = type)
         with  math_file_path.open("w+") as f:

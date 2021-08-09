@@ -10,11 +10,11 @@ def gen_type_implicit_conversion(base_type:str, implicit_types:List[str]) -> str
             # gen assign code 
             assign_code = ""
             for i in range(0, dimension):
-                assign_code += str.format("({implicit_type})pad[{idx}], ", implicit_type = implicit_type, idx = i)
+                assign_code += str.format("({base_type})v.pad[{idx}], ", base_type = base_type, idx = i)
             assign_code = assign_code[0:-2]
             
             # add implicit type case 
-            result += str.format("{inline_marco} {base_type}{dimension}::operator {implicit_type}{dimension}() const noexcept {{ return {implicit_type}{dimension}({assign_code}); }}\n"
+            result += str.format("{inline_marco} {base_type}{dimension}::{base_type}{dimension}(const {implicit_type}{dimension}& v) noexcept : pad{{ {assign_code} }} {{ }}\n"
             , inline_marco = config.inline_marco
             , base_type = base_type
             , implicit_type = implicit_type
@@ -68,5 +68,3 @@ def gen_asxxx_conversion(type_list:List[str]) -> str:
 
     return result
 
-# gen vector operator + - * / %, and assign version 
-# gen vector ++ --

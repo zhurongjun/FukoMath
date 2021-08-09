@@ -86,6 +86,16 @@ def gen_type_code_vector(base_type_name:str, implicit_convert_types:List[str] = 
         result += "\t// constructor\n"
         result += gen_constructor_vector(base_type_name, i)
 
+        # gen convert constructor 
+        result += "\n\t// convert constructor\n"
+        for implicit_type in implicit_convert_types:
+            result += str.format("\t{inline_marco} {convert_type}{base_type}{dimension}(const {implicit_type}{dimension}& v) noexcept;\n"
+            , convert_type =  "" if base_type_name in config.implicit_convert_dic[implicit_type] else "explicit "
+            , base_type = base_type_name
+            , implicit_type = implicit_type
+            , dimension = i
+            , inline_marco = config.inline_marco)
+
         # gen access operator 
         result += "\n\t// access operator"
         result += str.format('''
@@ -94,14 +104,6 @@ def gen_type_code_vector(base_type_name:str, implicit_convert_types:List[str] = 
 '''
     , base_type = base_type_name
     , inline_marco = config.inline_marco)
-
-        # gen implicit convert operator 
-        result += "\n\t// implicit convert operator\n"
-        for implicit_type in implicit_convert_types:
-            result += str.format("\t{inline_marco} operator {base_type}{dimension}() const noexcept;\n"
-            , base_type = implicit_type
-            , dimension = i
-            , inline_marco = config.inline_marco)
 
         # gen union 
         result += str.format('''

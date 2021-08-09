@@ -20,6 +20,6 @@ matrix_type_list = ["float", "double", "int", "uint"]
 enable_namespace = True
 math_namespace = "fuko::math"
 inline_marco = "FORCEINLINE"
-enable_matrix_swizzle = True
+enable_matrix_swizzle = False
 
 # math 

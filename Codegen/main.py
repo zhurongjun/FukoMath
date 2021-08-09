@@ -37,7 +37,11 @@ if __name__ == "__main__" :
 
     # copy swizzle.h 
     swizzle_template_path = codgen_root_dir / config.swizzle_template_path
-    shutil.copyfile(str(swizzle_template_path), str(swizzle_dir / "swizle.h"))
+    if swizzle_template_path.exists():
+        shutil.copyfile(str(swizzle_template_path), str(swizzle_dir / "swizle.h"))
+    else:
+        print("lost swizzle template file\n")
+        exit()
 
     # gen vector swizzle 
     for src_size in range(2, 5):
@@ -104,6 +108,28 @@ if __name__ == "__main__" :
         pass
 
     # gen deferred file 
+    deferred_file_path = cpp_root_dir / "fuko_math_deferred.h"
+    deferred_template_file_path = codgen_root_dir / config.deferred_file_template_path
+    if deferred_template_file_path.exists():
+            deferred_template : str 
+
+            # read template 
+            with deferred_template_file_path.open() as f:
+                deferred_template = f.read()
+            
+            # write 
+            with deferred_file_path.open("w+") as f:
+                pass
+    else:
+        print("lost deferred template file\n")
+        exit()
 
     # gen math 
+    for type in list(set(config.vector_type_list).union(config.matrix_type_list)):
+        math_file_path = math_dir / str.format("{base_type}_math.h", base_type = type)
+        with  math_file_path.open("w+") as f:
+            if type in config.vector_type_list:
+                pass
+            if type in config.matrix_type_list:
+                pass
     

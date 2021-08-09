@@ -2,6 +2,21 @@
     "files.associations": {
         "swizzle4": "cpp",
         "swizzle2": "cpp",
-        "swizzle3": "cpp"
+        "swizzle3": "cpp",
+        "swizzle1x2": "cpp",
+        "swizzle1x3": "cpp",
+        "swizzle1x4": "cpp",
+        "swizzle2x1": "cpp",
+        "swizzle2x2": "cpp",
+        "swizzle2x3": "cpp",
+        "swizzle2x4": "cpp",
+        "swizzle3x1": "cpp",
+        "swizzle3x2": "cpp",
+        "swizzle3x3": "cpp",
+        "swizzle3x4": "cpp",
+        "swizzle4x1": "cpp",
+        "swizzle4x2": "cpp",
+        "swizzle4x3": "cpp",
+        "swizzle4x4": "cpp",
     }
 }

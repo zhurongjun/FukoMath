@@ -87,9 +87,9 @@ def gen_type_code_vector(base_type_name:str, implicit_convert_types:List[str] = 
         # gen access operator 
         result += "\n\t// access operator"
         result += str.format('''
-    {inline_marco} {base_type}& operator[](int index) noexcept {{ return pad[index]; }}
-	{inline_marco} {base_type} operator[](int index) const noexcept {{ return pad[index]; }}
-    '''
+\t{inline_marco} {base_type}& operator[](int index) noexcept {{ return pad[index]; }}
+\t{inline_marco} {base_type} operator[](int index) const noexcept {{ return pad[index]; }}
+'''
     , base_type = base_type_name
     , inline_marco = config.inline_marco)
 
@@ -104,12 +104,12 @@ def gen_type_code_vector(base_type_name:str, implicit_convert_types:List[str] = 
         # gen union 
         result += str.format('''
     union
-    {{
-        {base_type} pad[{dimension}];
-        #define {type_marco} {base_type}
-        #include "../Swizzle/swizzle{dimension}"
-        #undef {type_marco}
-    }};
+\t{{
+\t\t{base_type} pad[{dimension}];
+\t\t#define {type_marco} {base_type}
+\t\t#include "../Swizzle/swizzle{dimension}"
+\t\t#undef {type_marco}
+\t}};
 '''
     , base_type = base_type_name
     , dimension = i
@@ -137,7 +137,48 @@ def gen_type_code_matrix(base_type_name:str) -> str:
             if row_size == 1 and col_size == 1:
                 continue
             else:
-                pass
+                # begin struct 
+                result += str.format("struct {base_type}{row_size}x{col_size}\n{{\n", base_type = base_type_name, row_size = row_size, col_size = col_size)
+
+                # gen default constructor 
+
+                # gen vector constructor 
+
+                # gen access operator 
+                result += "\t// access operator"
+                if col_size == 1:
+                    result += str.format('''
+\t{inline_marco} {base_type}& operator[](int index) noexcept {{ return pad[index]; }}
+\t{inline_marco} {base_type} operator[](int index) const noexcept {{ return pad[index]; }}
+'''                 
+                    , base_type = base_type_name
+                    , inline_marco = config.inline_marco)
+                else:
+                    result += str.format('''
+\t{inline_marco} {base_type}{dimension}& operator[](int index) noexcept {{ return (({base_type}{dimension}*)pad)[index]; }}
+\t{inline_marco} {base_type}{dimension} operator[](int index) const noexcept {{ return (({base_type}{dimension}*)pad)[index]; }}
+'''
+                    , base_type = base_type_name
+                    , inline_marco = config.inline_marco
+                    , dimension = col_size)
+
+                # begin union 
+                result += "\n\tunion\n\t{\n"
+
+                # gen pad 
+                result += str.format("\t\t{base_type} pad[{pad_size}];\n", base_type = base_type_name, pad_size = row_size * col_size)
+
+                # gen siwzzle 
+                if config.enable_matrix_swizzle:
+                    result += str.format("\t\t#define {type_marco} {base_type}\n", type_marco = util.swizzle_type_marco, base_type = base_type_name)
+                    result += str.format('''\t\t#include "../Swizzle/swizzle{row_size}x{col_size}"\n''', row_size = row_size, col_size = col_size)
+                    result += str.format("\t\t#undef {type_marco}\n", type_marco = util.swizzle_type_marco)
+
+                # end union 
+                result += "\t};\n"
+
+                # end struct 
+                result += "};\n\n"
 
     return result
 

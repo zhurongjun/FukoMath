@@ -74,7 +74,7 @@ if __name__ == "__main__" :
         exit()
     
     # gen type codes  
-    for type in config.vector_type_list:
+    for type in list(set(config.vector_type_list).union(config.matrix_type_list)):
         implicit_types = config.vector_type_list.copy()
         implicit_types.remove(type)
 
@@ -87,10 +87,12 @@ if __name__ == "__main__" :
                 f.write(begin_namespace())
             
             # gen vector codes 
-            f.write(gen_type.gen_type_code_vector(type, implicit_types))
+            if type in config.vector_type_list:
+                f.write(gen_type.gen_type_code_vector(type, implicit_types))
 
             # gen matrix types
-            f.write(gen_type.gen_type_code_matrix(type))
+            if type in config.matrix_type_list:
+                f.write(gen_type.gen_type_code_matrix(type))
 
             # begin namespace 
             if config.enable_namespace:

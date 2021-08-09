@@ -32,7 +32,7 @@
 *.app
 
 # python 
-codegen/__pycache__/
+Codegen/__pycache__/
 
 # premake 
 !premake/**

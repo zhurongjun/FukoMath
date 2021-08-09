@@ -49,7 +49,7 @@ if __name__ == "__main__" :
     # copy swizzle.h 
     swizzle_template_path = codgen_root_dir / config.swizzle_template_path
     if swizzle_template_path.exists():
-        shutil.copyfile(str(swizzle_template_path), str(swizzle_dir / "swizle.h"))
+        shutil.copyfile(str(swizzle_template_path), str(swizzle_dir / "swizzle.h"))
     else:
         print("lost swizzle template file\n")
         exit()

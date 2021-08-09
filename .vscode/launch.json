@@ -8,14 +8,14 @@
             "name": "codegen",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/Codegen/main.py",
+            "program": "${workspaceFolder}/codegen/main.py",
             "console": "integratedTerminal"
         },
         {
             "name": "cleanup",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/Codegen/main.py",
+            "program": "${workspaceFolder}/codegen/main.py",
             "console": "integratedTerminal",
             "args": ["cleanup"]
         }

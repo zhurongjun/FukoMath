@@ -1,5 +1,6 @@
 from typing import List
 import codegen_util as util
+import config
 
 def recursive_gen_constructor(base_type_name:str, raw_size:int, remain_size:int, case_cache:List[int], result:List[str]) -> None:
     if remain_size == 0: # gen code 
@@ -55,8 +56,8 @@ def gen_constructor_vector(base_type_name:str, size:int) -> str:
     result = ""
     
     # gen basic swizzle init 
-    result += "\t" + base_type_name + str(size) + "() : pad { 0 } {}\n"
-    result += "\t" + base_type_name + str(size) + "(float n) : pad { "
+    result += "\t" + config.inline_marco + " " + base_type_name + str(size) + "() : pad { 0 } {}\n"
+    result += "\t" + config.inline_marco + " " + base_type_name + str(size) + "(float n) : pad { "
     for i in range(0, size):
         result += "n, "
     result = result[0:-2]
@@ -67,12 +68,12 @@ def gen_constructor_vector(base_type_name:str, size:int) -> str:
     swizzle_result : List[str] = []
     recursive_gen_constructor(base_type_name, size, size, case_cache, swizzle_result)
     for s in swizzle_result:
-        result += "\t" + s + "\n"
+        result += "\t" + config.inline_marco + " " + s + "\n"
 
     return result
 
-def gen_type_code(base_type_name:str, implicit_convert_types:List[str] = []) ->str:
-    result = "#pragma once\n"
+def gen_type_code_vector(base_type_name:str, implicit_convert_types:List[str] = []) ->str:
+    result = ""
   
     # gen structures 
     for i in range(2, 5):
@@ -86,10 +87,11 @@ def gen_type_code(base_type_name:str, implicit_convert_types:List[str] = []) ->s
         # gen access operator 
         result += "\n\t// access operator"
         result += str.format('''
-    {base_type}& operator[](int index) noexcept {{ return pad[index]; }}
-	{base_type} operator[](int index) const noexcept {{ return pad[index]; }}
+    {inline_marco} {base_type}& operator[](int index) noexcept {{ return pad[index]; }}
+	{inline_marco} {base_type} operator[](int index) const noexcept {{ return pad[index]; }}
     '''
-    , base_type = base_type_name)
+    , base_type = base_type_name
+    , inline_marco = config.inline_marco)
 
         # gen implicit convert operator 
         result += "\n\t// implicit convert operator\n"
@@ -97,10 +99,11 @@ def gen_type_code(base_type_name:str, implicit_convert_types:List[str] = []) ->s
             pad_assign_str = "pad[0]"
             for pad_pos in range(1, i):
                 pad_assign_str += str.format(", pad[{pad_pos}]", pad_pos = pad_pos)
-            result += str.format("\toperator {base_type}{dimension}() const noexcept {{ return {base_type}{dimension}({pad_assign}); }}\n"
+            result += str.format("\t{inline_marco} operator {base_type}{dimension}() const noexcept {{ return {base_type}{dimension}({pad_assign}); }}\n"
             , base_type = implicit_type
             , dimension = i
-            , pad_assign = pad_assign_str)
+            , pad_assign = pad_assign_str
+            , inline_marco = config.inline_marco)
 
         # gen union 
         result += str.format('''
@@ -121,3 +124,11 @@ def gen_type_code(base_type_name:str, implicit_convert_types:List[str] = []) ->s
 
     return result;
 
+def gen_forward_declare_vector(type_list:List[int]) -> str:
+    result = ""
+    
+    for type in type_list:
+        for dimension in range(2, 5):
+            result += str.format("struct {type_name}{dimension};\n", type_name = type,  dimension = dimension);
+    
+    return result

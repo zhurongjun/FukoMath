@@ -6,10 +6,17 @@ import shutil
 import codegen_util as util
 from pathlib import Path
 
-root_dir = Path(__file__).parent
-swizzle_dir = root_dir.parent / "FukoMath" / "Swizzle"
-types_dir = root_dir.parent / "FukoMath" / "Types"
-math_dir = root_dir.parent / "FukoMath" / "Math"
+codgen_root_dir = Path(__file__).parent
+project_root_dir = codgen_root_dir.parent
+swizzle_dir = project_root_dir / "FukoMath" / "Swizzle"
+types_dir = project_root_dir / "FukoMath" / "Types"
+math_dir = project_root_dir / "FukoMath" / "Math"
+
+def begin_namespace() -> str:
+    return str.format("namespace {math_namespace}\n{{\n", math_namespace = config.math_namespace)
+
+def end_namespace() -> str:
+    return "}"
 
 
 if __name__ == "__main__" :
@@ -22,38 +29,58 @@ if __name__ == "__main__" :
         math_dir.mkdir(parents=True)
 
     # copy swizzle.h 
-    swizzle_template_path = root_dir / config.swizzle_template_path
+    swizzle_template_path = codgen_root_dir / config.swizzle_template_path
     shutil.copyfile(str(swizzle_template_path), str(swizzle_dir / "swizle.h"))
 
     # gen vector swizzle 
     for src_size in range(2, 5):
-        f = (swizzle_dir / str.format("swizzle{size}", size = src_size)).open("w+")
-        f.write('#include "swizzle.h"')
-        f.write(gen_swizzle.gen_swizzle_code_vector(src_size))
-        f.close()
+        with (swizzle_dir / str.format("swizzle{size}", size = src_size)).open("w+") as f:
+            f.write('#include "swizzle.h"')
+            f.write(gen_swizzle.gen_swizzle_code_vector(src_size))
 
     # gen matrix swizzle 
     for row_size in range(1, 5):
         for col_size in range(1, 5):
             if row_size != 1 or col_size != 1:
-                f = (swizzle_dir / str.format("swizzle{row}x{col}", row = row_size, col = col_size)).open("w+")
-                f.write('#include "swizzle.h"')
-                f.write(gen_swizzle.gen_swizzle_code_matrix(row_size, col_size))
-                f.close()
+                with (swizzle_dir / str.format("swizzle{row}x{col}", row = row_size, col = col_size)).open("w+") as f:
+                    f.write('#include "swizzle.h"')
+                    f.write(gen_swizzle.gen_swizzle_code_matrix(row_size, col_size))
 
-    # gen common file  
+    # gen forward file 
+    forward_file_path = project_root_dir / "FukoMath" / "fuko_math_forward.h"
+    forward_template_file_path = codgen_root_dir / config.forward_file_template_path
+    if forward_template_file_path.exists():
+        forward_template : str 
 
+        # read template 
+        with forward_template_file_path.open() as f:
+            forward_template = f.read()
+        
+        # write 
+        with forward_file_path.open("w+") as f:
+            f.write(str.format(forward_template, forward_declares = gen_type.gen_forward_declare_vector(config.vector_type_list)))
+    else:
+        print("lost forward template file\n")
+        exit()
+    
     # gen vector types 
     for type in config.vector_type_list:
-        f = (types_dir / (type + ".h")).open("w+")
         implicit_types = config.vector_type_list.copy()
         implicit_types.remove(type)
-        f.write(gen_type.gen_type_code(type, implicit_types))
-        f.close()
 
-    # gen vector convert 
+        # write file 
+        with (types_dir / (type + ".h")).open("w+") as f:
+            f.write("#pragma once\n")
+            if config.enable_namespace:
+                f.write(begin_namespace())
+                f.write(gen_type.gen_type_code_vector(type, implicit_types))
+                f.write(end_namespace())
+            else:
+                f.write(gen_type.gen_type_code_vector(type, implicit_types))
 
     # gen matrix types 
+
+    # gen deferred file 
 
     # gen math 
     

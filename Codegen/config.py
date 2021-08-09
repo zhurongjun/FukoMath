@@ -15,6 +15,7 @@ deferred_file_template_path = "./Templates/fuko_math_deferred.h"
 # vector & matrix codegen types  
 vector_type_list = ["float", "double", "int", "uint", "bool"]
 matrix_type_list = ["float", "double", "int", "uint"]
+asxxx_type_list = ["float", "int", "uint"]
 
 # enviroment 
 enable_namespace = True

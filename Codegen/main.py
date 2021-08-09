@@ -7,6 +7,7 @@ import sys
 import codegen_util as util
 from pathlib import Path
 
+# paths 
 codgen_root_dir = Path(__file__).parent
 project_root_dir = codgen_root_dir.parent
 cpp_root_dir = project_root_dir / "FukoMath"
@@ -14,12 +15,14 @@ swizzle_dir =   cpp_root_dir / "Swizzle"
 types_dir =     cpp_root_dir / "Types"
 math_dir =      cpp_root_dir / "Math"
 
+# lists 
+full_type_list = set(config.vector_type_list).union(config.matrix_type_list)
+
 def begin_namespace() -> str:
     return str.format("namespace {math_namespace}\n{{\n", math_namespace = config.math_namespace)
 
 def end_namespace() -> str:
     return "}"
-
 
 if __name__ == "__main__" :
     # clean up dir 
@@ -78,7 +81,7 @@ if __name__ == "__main__" :
         exit()
     
     # gen type codes  
-    for type in list(set(config.vector_type_list).union(config.matrix_type_list)):
+    for type in full_type_list:
         implicit_types = config.vector_type_list.copy()
         implicit_types.remove(type)
 
@@ -125,7 +128,7 @@ if __name__ == "__main__" :
         exit()
 
     # gen math 
-    for type in list(set(config.vector_type_list).union(config.matrix_type_list)):
+    for type in full_type_list :
         math_file_path = math_dir / str.format("{base_type}_math.h", base_type = type)
         with  math_file_path.open("w+") as f:
             if type in config.vector_type_list:

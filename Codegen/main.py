@@ -14,6 +14,9 @@ cpp_root_dir = project_root_dir / "FukoMath"
 swizzle_dir =   cpp_root_dir / "Swizzle"
 types_dir =     cpp_root_dir / "Types"
 math_dir =      cpp_root_dir / "Math"
+make_script_path = project_root_dir / "premake.lua"
+forward_file_path = cpp_root_dir / "fuko_math_forward.h"
+deferred_file_path = cpp_root_dir / "fuko_math_deferred.h"
 
 # lists 
 full_type_list = set(config.vector_type_list).union(config.matrix_type_list)
@@ -28,6 +31,8 @@ if __name__ == "__main__" :
     # clean up dir 
     if cpp_root_dir.exists():
         shutil.rmtree(cpp_root_dir)
+    if make_script_path.exists():
+        make_script_path.unlink()
 
     # clean up option 
     if "cleanup" in sys.argv:
@@ -62,7 +67,6 @@ if __name__ == "__main__" :
                         f.write(gen_swizzle.gen_swizzle_code_matrix(row_size, col_size))
 
     # gen forward file 
-    forward_file_path = cpp_root_dir / "fuko_math_forward.h"
     forward_template_file_path = codgen_root_dir / config.forward_file_template_path
     if forward_template_file_path.exists():
         forward_template : str 
@@ -111,7 +115,6 @@ if __name__ == "__main__" :
         pass
 
     # gen deferred file 
-    deferred_file_path = cpp_root_dir / "fuko_math_deferred.h"
     deferred_template_file_path = codgen_root_dir / config.deferred_file_template_path
     if deferred_template_file_path.exists():
             deferred_template : str 
@@ -136,3 +139,18 @@ if __name__ == "__main__" :
             if type in config.matrix_type_list:
                 pass
     
+    # gen makescript 
+    make_script_template_path = codgen_root_dir / config.make_script_template_path
+    if make_script_template_path.exists():
+        make_script_template : str 
+       
+        # read template 
+        with make_script_template_path.open() as f:
+            make_script_template = f.read()
+
+        # write 
+        with make_script_path.open("w+") as f:
+            f.write(make_script_template)
+    else:
+        print("lost make script template file\n")
+        exit()

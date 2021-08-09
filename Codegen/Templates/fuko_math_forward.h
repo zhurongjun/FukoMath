@@ -17,7 +17,6 @@
 
 // forward declares 
 {forward_declares}
-
 // TODO. simd define 
 
 // TODO. disable warning 

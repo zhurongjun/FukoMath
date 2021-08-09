@@ -17,8 +17,9 @@ vector_type_list = ["float", "double", "int", "uint", "bool"]
 matrix_type_list = ["float", "double", "int", "uint"]
 
 # enviroment 
+enable_namespace = True
 math_namespace = "fuko::math"
 inline_marco = "FORCEINLINE"
-enable_namespace = True
+enable_matrix_swizzle = False
 
 # math 

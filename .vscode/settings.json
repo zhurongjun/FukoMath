@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "swizzle4": "cpp",
-        "swizzle2": "cpp"
+        "swizzle2": "cpp",
+        "swizzle3": "cpp"
     }
 }

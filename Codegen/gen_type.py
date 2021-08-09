@@ -78,7 +78,7 @@ def gen_type_code_vector(base_type_name:str, implicit_convert_types:List[str] = 
     # gen structures 
     for i in range(2, 5):
         # begin struct 
-        result += str.format("struct {base_type}{dimension}\n", base_type = base_type_name, dimension = i) + "{\n"
+        result += str.format("struct {base_type}{dimension}\n{{\n", base_type = base_type_name, dimension = i)
         
         # gen constructor 
         result += "\t// constructor\n"
@@ -96,13 +96,9 @@ def gen_type_code_vector(base_type_name:str, implicit_convert_types:List[str] = 
         # gen implicit convert operator 
         result += "\n\t// implicit convert operator\n"
         for implicit_type in implicit_convert_types:
-            pad_assign_str = "pad[0]"
-            for pad_pos in range(1, i):
-                pad_assign_str += str.format(", pad[{pad_pos}]", pad_pos = pad_pos)
-            result += str.format("\t{inline_marco} operator {base_type}{dimension}() const noexcept {{ return {base_type}{dimension}({pad_assign}); }}\n"
+            result += str.format("\t{inline_marco} operator {base_type}{dimension}() const noexcept;\n"
             , base_type = implicit_type
             , dimension = i
-            , pad_assign = pad_assign_str
             , inline_marco = config.inline_marco)
 
         # gen union 
@@ -132,3 +128,29 @@ def gen_forward_declare_vector(type_list:List[int]) -> str:
             result += str.format("struct {type_name}{dimension};\n", type_name = type,  dimension = dimension);
     
     return result
+
+def gen_type_code_matrix(base_type_name:str) -> str:
+    result = ""
+
+    for row_size in range(1, 5):
+        for col_size in range(1, 5):
+            if row_size == 1 and col_size == 1:
+                continue
+            else:
+                pass
+
+    return result
+
+def gen_forward_declare_matrix(typelist:List[int]) -> str:
+    result = ""
+
+    for type in typelist:
+        for row_size in range(1, 5):
+            for col_size in range(1, 5):
+                if row_size == 1 and col_size == 1:
+                    continue
+                else:
+                    result += str.format("struct {type_name}{row_size}x{col_size};\n", type_name = type, row_size = row_size, col_size = col_size)
+    
+    return result
+

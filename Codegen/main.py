@@ -3,6 +3,7 @@ import gen_swizzle
 import gen_type
 import config
 import shutil
+import sys
 import codegen_util as util
 from pathlib import Path
 
@@ -24,6 +25,10 @@ if __name__ == "__main__" :
     # clean up dir 
     if cpp_root_dir.exists():
         shutil.rmtree(cpp_root_dir)
+
+    # clean up option 
+    if "cleanup" in sys.argv:
+        exit()
 
     # gen dir 
     swizzle_dir.mkdir(parents=True)

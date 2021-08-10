@@ -1,5 +1,6 @@
 from typing import List
 import config
+import math_declare
 
 # gen vector ++ --
 def gen_vector_increment_decrement(type_list:List[str]) -> str:
@@ -31,6 +32,7 @@ def gen_vector_increment_decrement(type_list:List[str]) -> str:
 
     return result
 
+# gen vector operator + - * / % 
 def gen_vector_arithmetic(type_list:List[str]) -> str:
     result = ""
     
@@ -78,6 +80,7 @@ def gen_vector_arithmetic(type_list:List[str]) -> str:
 
     return result
 
+# gen vector operator += -= *= /= %= 
 def gen_vector_arithmetic_assign(type_list:List[str]) -> str:
     result = ""
     
@@ -93,4 +96,14 @@ def gen_vector_arithmetic_assign(type_list:List[str]) -> str:
 
     return result
 
-# gen vector operator + - * / %, and assign version 
+# gen vector math for per type 
+def gen_vertor_math(base_type:str) -> str:
+    result = ""
+
+    for k,v in math_declare.vector_declares.__dict__.items():
+        if type(v) == tuple and base_type in v[0]:
+            for dimension in range(1, 5):
+                if dimension in v[1]:
+                    result += "// {fun_name} {base_type} {dimension}\n".format(fun_name = k, base_type = base_type, dimension = dimension)
+
+    return result

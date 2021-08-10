@@ -11,10 +11,10 @@ vector_type_list = ["float", "double", "int", "uint", "bool"]
 matrix_type_list = ["float", "double", "int", "uint"]
 asxxx_type_list = ["float", "int", "uint"]
 arithmetic_type_list = ["float", "double", "int", "uint"]
-implicit_convert_dic =  { "float":  ["double", "bool"]
-                        , "double": ["bool"]
-                        , "int":    ["double", "float", "bool", "uint"]
-                        , "uint":   ["double", "float", "bool"]
+implicit_convert_dic =  { "float":  ["double"]
+                        , "double": []
+                        , "int":    ["double", "float", "uint"]
+                        , "uint":   ["double", "float"]
                         , "bool":   ["double", "float", "int", "uint"] }
 floating_type_mode_list = ["float", "double"]
 
@@ -25,3 +25,9 @@ inline_marco = "FORCEINLINE"
 enable_matrix_swizzle = False
 
 # math 
+all_num_types = ["float", "double", "int", "uint"]
+all_floating_types = ["float", "double"]
+all_integer_types = ["int", "uint"]
+all_types = ["float", "double", "int", "uint", "bool"]
+bool_only = ["bool"]
+uint_only = ["uint"]

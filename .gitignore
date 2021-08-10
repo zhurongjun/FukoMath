@@ -39,3 +39,7 @@ Codegen/__pycache__/
 
 # workspace 
 workspace/**
+
+# gen items 
+premake.lua
+FukoMath/**

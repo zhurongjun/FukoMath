@@ -1,3 +1,4 @@
+from types import FunctionType
 from typing import List
 import gen_swizzle
 import gen_type
@@ -183,13 +184,29 @@ if __name__ == "__main__" :
         if config.enable_namespace:
             f.write(end_namespace())
 
+    # gen per type math 
     for type in full_type_list :
         math_file_path = math_dir / str.format("{base_type}_math.h", base_type = type)
         with  math_file_path.open("w+") as f:
+            # add pragma and forward 
+            f.write('''#pragma once\n#include "../fuko_math_forward.h"\n''')
+
+            # add type include 
+            f.write(str.format('''#include "../Types/{type}.h"\n\n''', type = type))
+
+            # begin namespace 
+            if config.enable_namespace:
+                f.write(begin_namespace())
+
+            # gen code 
             if type in config.vector_type_list:
-                pass
+                f.write(gen_math.gen_vertor_math(type))
             if type in config.matrix_type_list:
                 pass
+
+            # end namespace 
+            if config.enable_namespace:
+                f.write(end_namespace())
     
     # gen makescript 
     make_script_template_path = codgen_root_dir / config.make_script_template_path

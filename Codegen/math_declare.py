@@ -589,6 +589,7 @@ class vector_declares:
 
     # sincos	Returns the sine and cosine of x.	1¹
     sincos = (all_floating_types, dimension_any)
+    @staticmethod
     def gen_sincos(base_type:str, dimension:int) -> str:
         return "{inline_marco} void sincos({base_type}{dimension} x, {base_type}{dimension}& s, {base_type}{dimension}& c) {{ s = sin(x); c = cos(x); }}\n".format(
               inline_marco = inline_marco

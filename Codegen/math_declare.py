@@ -3,8 +3,6 @@ from config import all_num_types
 from config import all_floating_types 
 from config import all_integer_types 
 from config import all_types 
-from config import bool_only 
-from config import uint_only 
 from config import inline_marco
 
 # dimension 
@@ -21,19 +19,59 @@ def loop_call_std_method(func_name:str, params:str, dimension:int) -> str:
     return calc_code
 
 class vector_declares:
-    # abs	Absolute value (per component).	1¹
-    abs = (all_num_types, dimension_any)
+    # select per component c ? a : b
+    select = (all_num_types, dimension_any)
     @staticmethod
-    def gen_abs(base_type:str, dimension:int) -> str:
-        calc_code = "x{idx} > 0 ? x{idx} : -x{idx}".format(idx = "" if dimension == 1 else "[0]")
+    def gen_select(base_type:str, dimension:int) -> str:
+        calc_code = "c{idx} ? a{idx} : b{idx}".format(idx = "" if dimension == 1 else "[0]")
         for i in range(1, dimension):
-            calc_code += ", x[{i}] > 0 ? x[{i}] : -x[{i}]".format(i = i)
+            calc_code += ", c[{i}] ? a[{i}] : b[{i}]".format(i = i)
 
-        return "{inline_marco} {base_type}{dimension} abs({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} select({base_type}{dimension} a, {base_type}{dimension} b, bool{dimension} c) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
             , calc_code = calc_code
+        )
+    
+    # select per component c ? a : b
+    m_and = (all_types, dimension_any)
+    @staticmethod
+    def gen_and(base_type:str, dimension:int) -> str:
+        calc_code = "x{idx} && y{idx}".format(idx = "" if dimension == 1 else "[0]")
+        for i in range(1, dimension):
+            calc_code += ", x[{i}] && y[{i}]".format(i = i)
+
+        return "{inline_marco} bool{dimension} and({base_type}{dimension} x, {base_type}{dimension} y) {{ return bool{dimension}({calc_code}); }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+            , calc_code = calc_code
+        )
+
+    # select per component c ? a : b
+    m_or = (all_types, dimension_any)
+    @staticmethod
+    def gen_or(base_type:str, dimension:int) -> str:
+        calc_code = "x{idx} || y{idx}".format(idx = "" if dimension == 1 else "[0]")
+        for i in range(1, dimension):
+            calc_code += ", x[{i}] || y[{i}]".format(i = i)
+
+        return "{inline_marco} bool{dimension} or({base_type}{dimension} x, {base_type}{dimension} y) {{ return bool{dimension}({calc_code}); }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+            , calc_code = calc_code
+        )
+
+    # abs	Absolute value (per component).	1¹
+    abs = (all_num_types, dimension_any)
+    @staticmethod
+    def gen_abs(base_type:str, dimension:int) -> str:
+        return "{inline_marco} {base_type}{dimension} abs({base_type}{dimension} x) {{ return select(x, -x, x > 0); }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
         )
 
     # acos	Returns the arccosine of each component of x.	1¹
@@ -166,12 +204,76 @@ class vector_declares:
     
     # degrees	Converts x from radians to degrees.	1¹
     degrees = (all_floating_types, dimension_any)
-        
-    # distance	Returns the distance between two points.	1¹
-    distance = (all_floating_types, dimension_any)
+    @staticmethod
+    def gen_degrees(base_type:str, dimension:int) -> str:
+        calc_code = "x{idx} / PI * 180".format(idx = "" if dimension == 1 else "[0]")
+        for i in range(1, dimension):
+            calc_code += ", x[{i}] / PI * 180".format(i = i)
+
+        return "{inline_marco} {base_type}{dimension} degrees({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+            , calc_code = calc_code
+        )
 
     # dot	Returns the dot product of two vectors.	1
     dot = (all_num_types, dimension_any)
+    @staticmethod
+    def gen_dot(base_type:str, dimension:int) -> str:
+        calc_code = "x{idx} * y{idx}".format(idx = "" if dimension == 1 else "[0]")
+        for i in range(1, dimension):
+            calc_code += "+ x[{i}] * y[{i}]".format(i = i)
+
+        return "{inline_marco} {base_type} dot({base_type}{dimension} x, {base_type}{dimension} y) {{ return {calc_code}; }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+            , calc_code = calc_code
+        )
+
+    # sqrt	Square root (per component)	1¹
+    sqrt = (all_floating_types, dimension_any)
+    @staticmethod
+    def gen_sqrt(base_type:str, dimension:int) -> str:
+        return "{inline_marco} {base_type}{dimension} sqrt({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+            , calc_code = loop_call_std_method("sqrt", "x{idx}", dimension)
+        )
+
+    # rsqrt	Returns 1 / sqrt(x)	1¹
+    rsqrt = (all_floating_types, dimension_any)
+    @staticmethod
+    def gen_rsqrt(base_type:str, dimension:int) -> str:
+        return "{inline_marco} {base_type}{dimension} rsqrt({base_type}{dimension} x) {{ return 1 / sqrt(x); }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+        )
+
+    # length	Returns the length of the vector v.	1¹
+    length = (all_floating_types, dimension_any)
+    @staticmethod
+    def gen_length(base_type:str, dimension:int) -> str:
+        return "{inline_marco} {base_type} length({base_type}{dimension} x) {{ return {calc_code}; }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+            , calc_code = "abs(x)" if dimension == 1 else "sqrt(dot(x, x))"
+        )
+
+    # distance	Returns the distance between two points.	1¹
+    distance = (all_floating_types, dimension_any)
+    @staticmethod
+    def gen_distance(base_type:str, dimension:int) -> str:
+        return "{inline_marco} {base_type} length({base_type}{dimension} x, {base_type}{dimension} y) {{ return {calc_code}; }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+            , calc_code = "abs(y - 1)" if dimension == 1 else "length(y - x)"
+        )
 
     # exp	Returns the base-e exponent.	1¹
     exp = (all_floating_types, dimension_any)
@@ -195,12 +297,6 @@ class vector_declares:
             , calc_code = loop_call_std_method("exp2", "x{idx}", dimension)
         )
 
-    # firstbithigh	Gets the location of the first set bit starting from the highest order bit and working downward, per component.	5
-    firstbithigh = (uint_only, dimension_any)
-
-    # firstbitlow	Returns the location of the first set bit starting from the lowest order bit and working upward, per component.	5
-    firstbitlow = (uint_only, dimension_any)
-    
     # floor	Returns the greatest integer which is less than or equal to x.	1¹
     floor = (all_floating_types, dimension_any)
     @staticmethod
@@ -297,11 +393,15 @@ class vector_declares:
             , dimension = "" if dimension == 1 else dimension
         )
 
-    # length	Returns the length of the vector v.	1¹
-    length = (all_floating_types, dimension_any)
-
     # lerp	Returns x + s(y - x).	1¹
     lerp = (all_floating_types, dimension_any)
+    @staticmethod
+    def gen_lerp(base_type:str, dimension:int) -> str:
+        return "{inline_marco} {base_type}{dimension} lerp({base_type}{dimension} x, {base_type}{dimension} y, {base_type}{dimension} s) {{ return x + s * (y - x); }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+        )
 
     # log	Returns the base-e logarithm of x.	1¹
     log = (all_floating_types, dimension_any)
@@ -381,6 +481,13 @@ class vector_declares:
 
     # normalize	Returns a normalized vector.	1¹
     normalize = (all_floating_types, dimension_any)
+    @staticmethod
+    def gen_normalize(base_type:str, dimension:int) -> str:
+        return "{inline_marco} {base_type}{dimension} normalize({base_type}{dimension} x) {{ return x / length(x); }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+        )
 
     # pow	Returns xy.	1¹
     pow = (all_floating_types, dimension_any)
@@ -395,18 +502,48 @@ class vector_declares:
 
     # radians	Converts x from degrees to radians.	1
     radians = (all_floating_types, dimension_any)
+    @staticmethod
+    def gen_radians(base_type:str, dimension:int) -> str:
+        calc_code = "x{idx} / 180 * PI".format(idx = "" if dimension == 1 else "[0]")
+        for i in range(1, dimension):
+            calc_code += ", x[{i}] / 180 * PI".format(i = i)
+
+        return "{inline_marco} {base_type}{dimension} radians({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+            , calc_code = calc_code
+        )
 
     # rcp	Calculates a fast, approximate, per-component reciprocal.	5
     rcp = (all_floating_types, dimension_any)
+    @staticmethod
+    def gen_rcp(base_type:str, dimension:int) -> str:
+        return "{inline_marco} {base_type}{dimension} rcp({base_type}{dimension} x) {{ return 1 / x; }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+        )
 
     # reflect	Returns a reflection vector.	1
     reflect = (all_floating_types, dimension_any)
+    @staticmethod
+    def gen_reflect(base_type:str, dimension:int) -> str:
+        return "{inline_marco} {base_type}{dimension} reflect({base_type}{dimension} i, {base_type}{dimension} n) {{ return i - 2 * n * dot(i, n); }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+        )
 
     # refract	Returns the refraction vector.	1¹
     refract = (all_floating_types, dimension_any)
-
-    # reversebits	Reverses the order of the bits, per component.	5
-    reversebits = (uint_only, dimension_any)
+    @staticmethod
+    def gen_refract(base_type:str, dimension:int) -> str:
+        return "{inline_marco} {base_type}{dimension} refract({base_type}{dimension} i, {base_type}{dimension} n, {base_type} eta) {{ {base_type} ni = dot(n, i); {base_type} k = 1 - eta * eta * (1 - ni * ni); return select(0, eta * i - (eta * ni + sqrt(k)) * n, k >= 0); }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+        )
 
     # round	Rounds x to the nearest integer	1¹
     round = (all_floating_types, dimension_any)
@@ -417,27 +554,6 @@ class vector_declares:
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
             , calc_code = loop_call_std_method("round", "x{idx}", dimension)
-        )
-    
-    # sqrt	Square root (per component)	1¹
-    sqrt = (all_floating_types, dimension_any)
-    @staticmethod
-    def gen_sqrt(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} sqrt({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
-              inline_marco = inline_marco
-            , base_type = base_type
-            , dimension = "" if dimension == 1 else dimension
-            , calc_code = loop_call_std_method("sqrt", "x{idx}", dimension)
-        )
-
-    # rsqrt	Returns 1 / sqrt(x)	1¹
-    rsqrt = (all_floating_types, dimension_any)
-    @staticmethod
-    def gen_rsqrt(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} rsqrt({base_type}{dimension} x) {{ return sqrt(x) / 1; }}\n".format(
-              inline_marco = inline_marco
-            , base_type = base_type
-            , dimension = "" if dimension == 1 else dimension
         )
 
     # saturate	Clamps x to the range [0, 1]	1
@@ -452,6 +568,13 @@ class vector_declares:
 
     # sign	Computes the sign of x.	1¹
     sign = (all_num_types, dimension_any)
+    @staticmethod
+    def gen_sign(base_type:str, dimension:int) -> str:
+        return "{inline_marco} {base_type}{dimension} sign({base_type}{dimension} x) {{ return select(0, select(-1, 1, x < 0), x == 0); }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+        )
 
     # sin	Returns the sine of x	1¹
     sin = (all_floating_types, dimension_any)
@@ -496,6 +619,13 @@ class vector_declares:
 
     # step	Returns (x >= a) ? 1 : 0	1¹
     step = (all_floating_types, dimension_any)
+    @staticmethod
+    def gen_step(base_type:str, dimension:int) -> str:
+        return "{inline_marco} {base_type}{dimension} step({base_type}{dimension} x, {base_type}{dimension} a) {{ return select(1, 0, x >= a); }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , dimension = "" if dimension == 1 else dimension
+        )
 
     # tan	Returns the tangent of x	1¹
     tan = (all_floating_types, dimension_any)
@@ -535,8 +665,18 @@ class vector_declares:
     # faceforward	Returns -n * sign(dot(i, ng)).	1¹
     # lit	Returns a lighting vector (ambient, diffuse, specular, 1)	1¹
     # noise	Generates a random value using the Perlin-noise algorithm.	1¹
+    
+    # firstbithigh	Gets the location of the first set bit starting from the highest order bit and working downward, per component.	5
+    # firstbithigh = (all_integer_types, dimension_any)
+
+    # firstbitlow	Returns the location of the first set bit starting from the lowest order bit and working upward, per component.	5
+    # firstbitlow = (all_integer_types, dimension_any)
+    
     # countbits	Counts the number of bits (per component) in the input integer.	5
-    countbits = (uint_only, dimension_any)
+    # countbits = (all_integer_types, dimension_any)
+
+    # reversebits	Reverses the order of the bits, per component.	5
+    # reversebits = (all_integer_types, dimension_any)
 
 class matrix_declares:
     pass

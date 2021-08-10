@@ -24,6 +24,9 @@ namespace {math_namespace}
 // type alias 
 using uint = unsigned int;
 
+// constant 
+const float PI = 3.1415926535897932384626433832795028841971f;
+
 // floating mod 
 // See http://http.developer.nvidia.com/Cg/fmod.html for reference
 // This implementation does not follow the reference

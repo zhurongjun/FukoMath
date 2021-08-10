@@ -94,6 +94,38 @@ def gen_vector_arithmetic(type_list:List[str]) -> str:
                 , op = op
                 , op_code = op_code)
 
+        # gen sign 
+        for op in ["+", "-"]:
+            result += str.format("// {op} {type}\n", type = type, op = op)
+            for dimension in range(2, 5):
+                # gen op code 
+                op_code = str.format("{op}x[0]", op = op)
+                for idx in range(1, dimension):
+                    op_code += str.format(", {op}x[{idx}]", idx = idx, op = op)
+                
+                # gen final code 
+                result += str.format("{inline_marco} {type}{dimension} operator {op} (const {type}{dimension}& x) noexcept {{ return {type}{dimension}({op_code}); }}\n"
+                , inline_marco = config.inline_marco
+                , type = type
+                , dimension = dimension
+                , op = op
+                , op_code = op_code)
+        
+        # gen bool not(!) 
+        result += str.format("// {op} {type}\n", type = type, op = "!")
+        for dimension in range(2, 5):
+            # gen op code 
+            op_code = str.format("{op}x[0]", op = "!")
+            for idx in range(1, dimension):
+                op_code += str.format(", {op}x[{idx}]", idx = idx, op = "!")
+            
+            # gen final code 
+            result += str.format("{inline_marco} bool{dimension} operator {op} (const {type}{dimension}& x) noexcept {{ return bool{dimension}({op_code}); }}\n"
+            , inline_marco = config.inline_marco
+            , type = type
+            , dimension = dimension
+            , op = "!"
+            , op_code = op_code)
 
     return result
 
@@ -119,9 +151,10 @@ def gen_vertor_math(base_type:str) -> str:
 
     for k,v in math_declare.vector_declares.__dict__.items():
         if type(v) == tuple and base_type in v[0]:
-            result += "// {fun_name} \n".format(fun_name = k)
-            if hasattr(math_declare.vector_declares, "gen_" + k):
-                f = getattr(math_declare.vector_declares, "gen_" + k)
+            fun_name = str(k) if k[0:2] != "m_" else k[2:]
+            result += "// {fun_name} \n".format(fun_name = fun_name)
+            if hasattr(math_declare.vector_declares, "gen_" + fun_name):
+                f = getattr(math_declare.vector_declares, "gen_" + fun_name)
                 for dimension in range(1, 5):
                     if dimension in v[1]:
                         result += f(base_type, dimension)

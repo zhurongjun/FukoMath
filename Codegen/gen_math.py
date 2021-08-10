@@ -32,7 +32,7 @@ def gen_vector_increment_decrement(type_list:List[str]) -> str:
 
     return result
 
-# gen vector operator + - * / % 
+# gen vector operator + - * / % > < >= <= == != 
 def gen_vector_arithmetic(type_list:List[str]) -> str:
     result = ""
     
@@ -76,6 +76,23 @@ def gen_vector_arithmetic(type_list:List[str]) -> str:
             , dimension = "" if dimension == 1 else dimension
             , op = "%"
             , op_code = op_code)
+
+        # gen compare 
+        for op in [">", "<", ">=", "<=", "==", "!="]:
+            result += str.format("// {type} {op} {type}\n", type = type, op = op)
+            for dimension in range(2, 5):
+                # gen op code 
+                op_code = str.format("lsh[0] {op} rsh[0]", op = op)
+                for idx in range(1, dimension):
+                    op_code += str.format(", lsh[{idx}] {op} rsh[{idx}]", idx = idx, op = op)
+                
+                # gen final code 
+                result += str.format("{inline_marco} bool{dimension} operator {op} (const {type}{dimension}& lsh, const {type}{dimension}& rsh) noexcept {{ return bool{dimension}({op_code}); }}\n"
+                , inline_marco = config.inline_marco
+                , type = type
+                , dimension = dimension
+                , op = op
+                , op_code = op_code)
 
 
     return result

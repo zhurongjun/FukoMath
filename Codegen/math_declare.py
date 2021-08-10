@@ -680,8 +680,19 @@ class vector_declares:
     # reversebits = (all_integer_types, dimension_any)
 
 class matrix_declares:
-    pass
     # determinant	Returns the determinant of the square matrix m.	1¹
+    determinant = (all_floating_types, lambda row, col: row == col and row > 1)
+
     # mul	Performs matrix multiplication using x and y.	1
+    # mul(m, m) mul(m, s) mul(m, v)
+    # mul(v, v) mul(v, s) mul(v, m)
+    # mul(s, s) mul(s, m) mul(s, v)
+    mul = (all_floating_types, lambda row, col: True)
+    
     # transpose	Returns the transpose of the matrix m.	1
+    transpose = (all_num_types, lambda row, col: True)
+
+    # inverse 
+    inverse = (all_num_types, lambda row, col: row == col and row > 1)
+
     

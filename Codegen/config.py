@@ -16,7 +16,7 @@ implicit_convert_dic =  { "float":  ["double"]
                         , "int":    ["double", "float", "uint"]
                         , "uint":   ["double", "float"]
                         , "bool":   ["double", "float", "int", "uint"] }
-floating_type_mode_list = ["float", "double"]
+floating_type_mod_list = ["float", "double"]
 
 # enviroment 
 enable_namespace = True

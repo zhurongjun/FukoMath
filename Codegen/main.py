@@ -189,7 +189,7 @@ if __name__ == "__main__" :
         math_file_path = math_dir / str.format("{base_type}_math.h", base_type = type)
         with  math_file_path.open("w+") as f:
             # add pragma and forward 
-            f.write('''#pragma once\n#include "../fuko_math_forward.h"\n''')
+            f.write('''#pragma once\n#include <cmath>\n#include <algorithm>\n#include "util_math.h"\n#include "../fuko_math_forward.h"\n''')
 
             # add type include 
             f.write(str.format('''#include "../Types/{type}.h"\n\n''', type = type))

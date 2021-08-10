@@ -98,3 +98,17 @@ private:
 		base_type tmp[] = { self[sequence] = rhs[indices]... };
 	}
 };
+
+// + - * / %
+template<bool has_assign, typename base_type, typename target_type, uint32_t... sequence> FORCEINLINE target_type operator + (const target_type& lsh, const Swizzle<has_assign, base_type, target_type, sequence...> rsh) { return lsh + target_type(rsh); }
+template<bool has_assign, typename base_type, typename target_type, uint32_t... sequence> FORCEINLINE target_type operator + (const Swizzle<has_assign, base_type, target_type, sequence...> lsh, const target_type& rsh) { return target_type(lsh) + rsh; }
+template<bool has_assign, typename base_type, typename target_type, uint32_t... sequence> FORCEINLINE target_type operator - (const target_type& lsh, const Swizzle<has_assign, base_type, target_type, sequence...> rsh) { return lsh - target_type(rsh); }
+template<bool has_assign, typename base_type, typename target_type, uint32_t... sequence> FORCEINLINE target_type operator - (const Swizzle<has_assign, base_type, target_type, sequence...> lsh, const target_type& rsh) { return target_type(lsh) - rsh; }
+template<bool has_assign, typename base_type, typename target_type, uint32_t... sequence> FORCEINLINE target_type operator * (const target_type& lsh, const Swizzle<has_assign, base_type, target_type, sequence...> rsh) { return lsh * target_type(rsh); }
+template<bool has_assign, typename base_type, typename target_type, uint32_t... sequence> FORCEINLINE target_type operator * (const Swizzle<has_assign, base_type, target_type, sequence...> lsh, const target_type& rsh) { return target_type(lsh) * rsh; }
+template<bool has_assign, typename base_type, typename target_type, uint32_t... sequence> FORCEINLINE target_type operator / (const target_type& lsh, const Swizzle<has_assign, base_type, target_type, sequence...> rsh) { return lsh / target_type(rsh); }
+template<bool has_assign, typename base_type, typename target_type, uint32_t... sequence> FORCEINLINE target_type operator / (const Swizzle<has_assign, base_type, target_type, sequence...> lsh, const target_type& rsh) { return target_type(lsh) / rsh; }
+template<bool has_assign, typename base_type, typename target_type, uint32_t... sequence> FORCEINLINE target_type operator % (const target_type& lsh, const Swizzle<has_assign, base_type, target_type, sequence...> rsh) { return lsh % target_type(rsh); }
+template<bool has_assign, typename base_type, typename target_type, uint32_t... sequence> FORCEINLINE target_type operator % (const Swizzle<has_assign, base_type, target_type, sequence...> lsh, const target_type& rsh) { return target_type(lsh) % rsh; }
+
+// += -= *= /= %=

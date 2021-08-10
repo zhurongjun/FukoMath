@@ -60,10 +60,10 @@ def gen_vector_arithmetic(type_list:List[str]) -> str:
             op_code : str
 
             # gen op code 
-            if type in config.floating_type_mode_list:
-                op_code = "_floating_mod(lsh[0], rsh[0])"
+            if type in config.floating_type_mod_list:
+                op_code = "_floating_mod(lsh{idx}, rsh{idx})".format(idx = "" if dimension == 1 else "[0]")
                 for idx in range(1, dimension):
-                    op_code += str.format(", _floating_mod(lsh[0], rsh[0])", idx = idx)
+                    op_code += str.format(", _floating_mod(lsh{idx}, rsh{idx})", idx = "" if dimension == 1 else "[{dimension}]".format(dimension = dimension))
             else:
                 op_code = str.format("lsh[0] {op} rsh[0]", op = "%")
                 for idx in range(1, dimension):
@@ -73,7 +73,7 @@ def gen_vector_arithmetic(type_list:List[str]) -> str:
             result += str.format("{inline_marco} {type}{dimension} operator {op} (const {type}{dimension}& lsh, const {type}{dimension}& rsh) noexcept {{ return {type}{dimension}({op_code}); }}\n"
             , inline_marco = config.inline_marco
             , type = type
-            , dimension = dimension
+            , dimension = "" if dimension == 1 else dimension
             , op = "%"
             , op_code = op_code)
 
@@ -102,8 +102,12 @@ def gen_vertor_math(base_type:str) -> str:
 
     for k,v in math_declare.vector_declares.__dict__.items():
         if type(v) == tuple and base_type in v[0]:
-            for dimension in range(1, 5):
-                if dimension in v[1]:
-                    result += "// {fun_name} {base_type} {dimension}\n".format(fun_name = k, base_type = base_type, dimension = dimension)
+            result += "// {fun_name} \n".format(fun_name = k)
+            if hasattr(math_declare.vector_declares, "gen_" + k):
+                f = getattr(math_declare.vector_declares, "gen_" + k)
+                for dimension in range(1, 5):
+                    if dimension in v[1]:
+                        result += f(base_type, dimension)
+            result += "\n"
 
     return result

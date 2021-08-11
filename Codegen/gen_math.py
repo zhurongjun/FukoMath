@@ -150,14 +150,42 @@ def gen_vertor_math(base_type:str) -> str:
     result = ""
 
     for k,v in math_declare.vector_declares.__dict__.items():
+        # check support function 
         if type(v) == tuple and base_type in v[0]:
             fun_name = str(k) if k[0:2] != "m_" else k[2:]
             result += "// {fun_name} \n".format(fun_name = fun_name)
+            
+            # get attr 
             if hasattr(math_declare.vector_declares, "gen_" + fun_name):
                 f = getattr(math_declare.vector_declares, "gen_" + fun_name)
+                
+                # each dimension 
                 for dimension in range(1, 5):
                     if dimension in v[1]:
                         result += f(base_type, dimension)
+            result += "\n"
+
+    return result
+
+# gen matrix math for per type 
+def gen_matrix_math(base_type:str) -> str:
+    result = ""
+
+    for k,v in math_declare.matrix_declares.__dict__.items():
+        # check support function 
+        if type(v) == tuple and base_type in v[0]:
+            fun_name = str(k) if k[0:2] != "m_" else k[2:]
+            result += "// {fun_name} \n".format(fun_name = fun_name)
+            
+            # get attr 
+            if hasattr(math_declare.matrix_declares, "gen_" + fun_name):
+                f = getattr(math_declare.matrix_declares, "gen_" + fun_name)
+                
+                # each matrix dimension 
+                for row_size in range(1, 5):
+                    for col_size in range(1,5):
+                        if v[1](row_size, col_size):
+                            result += f(base_type, row_size, col_size)
             result += "\n"
 
     return result

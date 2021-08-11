@@ -202,7 +202,7 @@ if __name__ == "__main__" :
             if type in config.vector_type_list:
                 f.write(gen_math.gen_vertor_math(type))
             if type in config.matrix_type_list:
-                pass
+                f.write(gen_math.gen_matrix_math(type))
 
             # end namespace 
             if config.enable_namespace:

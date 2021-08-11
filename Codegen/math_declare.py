@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 from config import all_num_types 
 from config import all_floating_types 
 from config import all_integer_types 
@@ -679,20 +679,178 @@ class vector_declares:
     # reversebits	Reverses the order of the bits, per component.	5
     # reversebits = (all_integer_types, dimension_any)
 
+
+def recurve_gen_determinant(val_name:str, matrix_idx:List[List[Tuple[int, int]]]) -> str:
+    if len(matrix_idx) == 2:
+        return "{val_name}[{a_r}][{a_c}] * {val_name}[{d_r}][{d_c}] - {val_name}[{b_r}][{b_c}] * {val_name}[{c_r}][{c_c}]".format(
+              val_name = val_name
+            , a_r = matrix_idx[0][0][0]
+            , a_c = matrix_idx[0][0][1]
+            , b_r = matrix_idx[0][1][0]
+            , b_c = matrix_idx[0][1][1]
+            , c_r = matrix_idx[1][0][0]
+            , c_c = matrix_idx[1][0][1]
+            , d_r = matrix_idx[1][1][0]
+            , d_c = matrix_idx[1][1][1]
+        )
+    else:
+        result = ""
+        
+        for i in range(0, len(matrix_idx[0])):
+            # construct algebraic complement matrix 
+            new_matrix_idx = matrix_idx.copy()
+            for i in range(0, len(matrix_idx)):
+                new_matrix_idx[i] = matrix_idx[i].copy()
+            del new_matrix_idx[0]
+            for vec in new_matrix_idx:
+                del vec[i]
+
+            # combine 
+            result += "{sign} {val_name}[{v_r}][{v_c}] * ({code}) ".format(
+                  sign = "+" if i % 2 == 0 else "-"
+                , code = recurve_gen_determinant(val_name, new_matrix_idx)
+                , val_name = val_name
+                , v_r = matrix_idx[0][i][0]
+                , v_c = matrix_idx[0][i][1]
+            )
+
+        return result[2:]
+
 class matrix_declares:
     # determinant	Returns the determinant of the square matrix m.	1¹
     determinant = (all_floating_types, lambda row, col: row == col and row > 1)
+    @staticmethod
+    def gen_determinant(base_type:str, row_size:int, col_size:int) -> str:
+        return "{inline_marco} {base_type} determinant({base_type}{row_size}x{col_size} x) {{ return {calc_code}; }}\n".format(
+              inline_marco = inline_marco
+            , base_type = base_type
+            , row_size = row_size
+            , col_size = col_size
+            , calc_code = recurve_gen_determinant("x", [[(row, col) for col in range(0, col_size)] for row in range(0, row_size)])
+        )
 
     # mul	Performs matrix multiplication using x and y.	1
-    # mul(m, m) mul(m, s) mul(m, v)
-    # mul(v, v) mul(v, s) mul(v, m)
-    # mul(s, s) mul(s, m) mul(s, v)
-    mul = (all_floating_types, lambda row, col: True)
+    # mul(m, m) mul(m, s) mul(s, m) mul(m, v) mul(v, m)
+    mul = (all_floating_types, lambda row, col: row != 1 or col != 1)
+    @staticmethod
+    def gen_mul(base_type:str, row_size:int, col_size:int) -> str:
+        result = ""
+
+        # mul(m, m)
+        rhs_row_size = col_size
+        for rhs_col_size in range(1, 5):
+            if rhs_col_size == 1 and row_size == 1 or rhs_row_size == 1 and rhs_col_size == 1:
+                continue
+            calc_code = ""
+
+            # gen calc code 
+            for result_row in range(0, row_size):
+                for result_col in range(0, rhs_col_size):
+
+                    # result[row][col] = dot(x[row], y[col])
+                    for p in range(0, col_size):
+                        calc_code += "x[{l_r}]{l_c_idx} * y[{r_r}]{r_c_idx} + ".format(
+                              l_r = result_row
+                            , l_c_idx = "" if col_size == 1 else "[{l_c}]".format(l_c = p)
+                            , r_r = p
+                            , r_c_idx = "" if rhs_col_size == 1 else "[{r_c}]".format(r_c = result_col))
+                    calc_code = calc_code[0:-3] + ", "
+            calc_code = calc_code[0:-2]
+
+            result += "{inline_marco} {base_type}{row_size}x{rhs_col_size} mul({base_type}{row_size}x{col_size} x, {base_type}{rhs_row_size}x{rhs_col_size} y) {{ return {base_type}{row_size}x{rhs_col_size}({calc_code}); }}\n".format(
+                inline_marco = inline_marco
+            , base_type = base_type
+            , row_size = row_size
+            , col_size = col_size
+            , rhs_row_size = rhs_row_size
+            , rhs_col_size = rhs_col_size
+            , calc_code =  calc_code)
+
+        # mul(m, v)
+        if col_size != 1:
+            calc_code = ""
+            
+            # gen calc code 
+            for result_row in range(0, row_size):
+                
+                # result[row][col] = dot(x[row], y[col])
+                for p in range(0, col_size):
+                    calc_code += "x[{l_r}]{l_c_idx} * y[{r_r}] + ".format(
+                        l_r = result_row
+                        , l_c_idx = "" if col_size == 1 else "[{l_c}]".format(l_c = p)
+                        , r_r = p)
+                calc_code = calc_code[0:-3] + ", "
+
+            calc_code = calc_code[0:-2]
+
+            result += "{inline_marco} {base_type}{row_size_v} mul({base_type}{row_size}x{col_size} x, {base_type}{col_size_v} y) {{ return {base_type}{row_size_v}({calc_code}); }}\n".format(
+                    inline_marco = inline_marco
+                , base_type = base_type
+                , row_size = row_size
+                , row_size_v = "" if row_size == 1 else row_size
+                , col_size = col_size
+                , col_size_v = "" if col_size == 1 else col_size
+                , calc_code =  calc_code)
+
+        # mul(v, m)
+        if row_size != 1:
+            calc_code = ""
+            
+            # gen calc code 
+            for result_col in range(0, col_size):
+
+                # result[row][col] = dot(x[row], y[col])
+                for p in range(0, row_size):
+                    calc_code += "x{l_c_idx} * y[{r_r}]{r_c_idx} + ".format(
+                        l_c_idx = "" if row_size == 1 else "[{l_c}]".format(l_c = p)
+                        , r_r = p
+                        , r_c_idx = "" if col_size == 1 else "[{r_c}]".format(r_c = result_col))
+                calc_code = calc_code[0:-3] + ", "
+
+            calc_code = calc_code[0:-2]
+
+            result += "{inline_marco} {base_type}{col_size_v} mul({base_type}{row_size_v} x, {base_type}{row_size}x{col_size} y) {{ return {base_type}{col_size_v}({calc_code}); }}\n".format(
+                inline_marco = inline_marco
+                , base_type = base_type
+                , row_size = row_size
+                , row_size_v = "" if row_size == 1 else row_size
+                , col_size = col_size
+                , col_size_v = "" if col_size == 1 else col_size
+                , calc_code =  calc_code)
+
+
+        # mul(m, s)
+        calc_code = ""
+        for row in range(0, row_size):
+            for col in range(0, col_size):
+                calc_code += "x[{row}]{col_idx} * y, ".format(
+                    row = row
+                    , col_idx = "" if col_size == 1 else "[{col}]".format(col = col)
+                )
+        calc_code = calc_code[0:-2]
+
+        result += "{inline_marco} {base_type}{row_size}x{col_size} mul({base_type}{row_size}x{col_size} x, {base_type} y) {{ return {base_type}{row_size}x{col_size}({calc_code}); }}\n".format(
+            inline_marco = inline_marco
+            , base_type = base_type
+            , row_size = row_size
+            , col_size = col_size
+            , calc_code = calc_code
+        )
+
+        # mul(s, m)
+
+        return result
     
     # transpose	Returns the transpose of the matrix m.	1
-    transpose = (all_num_types, lambda row, col: True)
+    transpose = (all_num_types, lambda row, col: row != 1 or col != 1)
+    @staticmethod
+    def gen_transpose(base_type:str, row_size:int, col_size:int) -> str:
+        return ""
 
     # inverse 
     inverse = (all_num_types, lambda row, col: row == col and row > 1)
+    @staticmethod
+    def gen_inverse(base_type:str, row_size:int, col_size:int) -> str:
+        return ""
 
     

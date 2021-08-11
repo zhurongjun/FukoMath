@@ -21,6 +21,7 @@ make_script_path = project_root_dir / "premake.lua"
 forward_file_path = cpp_root_dir / "fuko_math_forward.h"
 deferred_file_path = cpp_root_dir / "fuko_math_deferred.h"
 facade_file_path = cpp_root_dir / "fuko_math.h"
+dependencies_file_path = cpp_root_dir / "fuko_math_dependencies.h"
 
 # lists 
 full_type_list = set(config.vector_type_list).union(config.matrix_type_list)
@@ -118,7 +119,6 @@ if __name__ == "__main__" :
                 f.write(end_namespace())
     
     # gen dependencies 
-    dependencies_file_path = cpp_root_dir / "fuko_math_dependencies.h"
     with dependencies_file_path.open("w+") as f:
         # add pragma and forward 
         f.write('''#pragma once\n#include "fuko_math_forward.h"\n''')

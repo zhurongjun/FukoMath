@@ -239,4 +239,3 @@ def gen_forward_declare_matrix(typelist:List[int]) -> str:
                     result += str.format("struct {type_name}{row_size}x{col_size};\n", type_name = type, row_size = row_size, col_size = col_size)
     
     return result
-

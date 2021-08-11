@@ -21,17 +21,10 @@ PlatformOSX64			= "OSX 64"
 PlatformLinux64_GCC		= "Linux64_GCC"
 PlatformLinux64_Clang	= "Linux64_Clang"
 
--- NEON
-PlatformARM 			= "MSVC ARM"
-PlatformARM64 			= "MSVC ARM64"
-PlatformAndroidARM 		= "Android ARM"
-PlatformAndroidARM64 	= "Android ARM64"
-
 -- platform 
 isMacBuild = _ACTION == "xcode4"
 isLinuxBuild = _ACTION == "gmake2"
 isWindowsBuild = not isMacBuild and not isLinuxBuild
-supportsARMBuild = _ACTION == "vs2017" or _ACTION == "vs2019"
 
 -- paths 
 fuko_math_lib_path = "FukoMath"
@@ -93,18 +86,6 @@ workspace("fuko_math")
 			PlatformLLVM64SSE2,
 			PlatformLLVM32SSE2, 
 		}
-
-		if(supportsARMBuild) then
-
-			platforms
-			{
-				PlatformARM, 
-				PlatformARM64, 
-				PlatformAndroidARM, 
-				PlatformAndroidARM64
-			}
-
-		end
 	
 		local llvmToolset;
 		
@@ -167,29 +148,7 @@ workspace("fuko_math")
 		filter { "platforms:"..PlatformLLVM32SSE2 }
 			toolset(llvmToolset)
 			buildoptions { "-Wno-unused-variable" }
-			
-		filter { "platforms:"..PlatformARM }
-			architecture("arm")
-			vectorextensions ("neon")
-			
-		filter { "platforms:"..PlatformARM64 }
-			architecture("arm64")
-			vectorextensions ("neon")
-			
-		filter { "platforms:"..PlatformAndroidARM }
-			system("android")
-			architecture("arm")
-			vectorextensions("neon")
-			buildoptions { "-Wno-unused-variable" }
-			linkoptions { "-lm" } -- Link against the standard math library
-			
-		filter { "platforms:"..PlatformAndroidARM64 }
-			system("android")
-			architecture("arm64")
-			vectorextensions("neon")
-			buildoptions { "-Wno-unused-variable" }
-			linkoptions { "-lm" } -- Link against the standard math library
-			
+
 		filter{}
 	end
 

@@ -20,6 +20,7 @@ math_dir =      cpp_root_dir / "Math"
 make_script_path = project_root_dir / "premake.lua"
 forward_file_path = cpp_root_dir / "fuko_math_forward.h"
 deferred_file_path = cpp_root_dir / "fuko_math_deferred.h"
+facade_file_path = cpp_root_dir / "fuko_math.h"
 
 # lists 
 full_type_list = set(config.vector_type_list).union(config.matrix_type_list)
@@ -208,6 +209,32 @@ if __name__ == "__main__" :
             if config.enable_namespace:
                 f.write(end_namespace())
     
+    # gen facade file 
+    facade_file_template_path = codgen_root_dir / config.facade_file_template_path
+    if facade_file_template_path.exists():
+        facade_file_template : str 
+
+        # read template 
+        with facade_file_template_path.open() as f:
+            facade_file_template = f.read()
+
+        # gen includes 
+        type_includes = ""
+        math_includes = '''#include "Math/util_math.h"\n'''
+
+        for type in full_type_list:
+            type_includes += '''#include "Types/{type}.h"\n'''.format(type = type)
+            math_includes += '''#include "Math/{type}_math.h"\n'''.format(type = type)
+
+        # write 
+        with facade_file_path.open("w+") as f:
+            f.write(facade_file_template.format(
+                type_includes = type_includes
+                , math_includes = math_includes))
+    else:
+        print("lost facade file template file\n")
+        exit()
+
     # gen makescript 
     make_script_template_path = codgen_root_dir / config.make_script_template_path
     if make_script_template_path.exists():

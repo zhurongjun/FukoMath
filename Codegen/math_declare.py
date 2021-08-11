@@ -2,6 +2,7 @@ from typing import List, Tuple
 from config import all_num_types 
 from config import all_floating_types 
 from config import all_integer_types 
+from config import all_has_sign_type
 from config import all_types 
 from config import inline_marco
 
@@ -34,30 +35,30 @@ class vector_declares:
             , calc_code = calc_code
         )
     
-    # select per component c ? a : b
-    m_and = (all_types, dimension_any)
+    # per component and
+    _and = (all_types, dimension_any)
     @staticmethod
-    def gen_and(base_type:str, dimension:int) -> str:
+    def gen__and(base_type:str, dimension:int) -> str:
         calc_code = "x{idx} && y{idx}".format(idx = "" if dimension == 1 else "[0]")
         for i in range(1, dimension):
             calc_code += ", x[{i}] && y[{i}]".format(i = i)
 
-        return "{inline_marco} bool{dimension} and({base_type}{dimension} x, {base_type}{dimension} y) {{ return bool{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} bool{dimension} _and({base_type}{dimension} x, {base_type}{dimension} y) {{ return bool{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
             , calc_code = calc_code
         )
 
-    # select per component c ? a : b
-    m_or = (all_types, dimension_any)
+    # per component or
+    _or = (all_types, dimension_any)
     @staticmethod
-    def gen_or(base_type:str, dimension:int) -> str:
+    def gen__or(base_type:str, dimension:int) -> str:
         calc_code = "x{idx} || y{idx}".format(idx = "" if dimension == 1 else "[0]")
         for i in range(1, dimension):
             calc_code += ", x[{i}] || y[{i}]".format(i = i)
 
-        return "{inline_marco} bool{dimension} or({base_type}{dimension} x, {base_type}{dimension} y) {{ return bool{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} bool{dimension} _or({base_type}{dimension} x, {base_type}{dimension} y) {{ return bool{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -65,10 +66,10 @@ class vector_declares:
         )
 
     # abs	Absolute value (per component).	1¹
-    abs = (all_num_types, dimension_any)
+    abs = (all_has_sign_type, dimension_any)
     @staticmethod
     def gen_abs(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} abs({base_type}{dimension} x) {{ return select(x, -x, x > 0); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} abs({base_type}{dimension} x) {{ return select({base_type}{dimension}(x), {base_type}{dimension}(-x), x > 0); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -323,10 +324,11 @@ class vector_declares:
     fmod = (all_floating_types, dimension_any)
     @staticmethod
     def gen_fmod(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} fmod({base_type}{dimension} x, {base_type}{dimension} y) {{ return _floating_mod(x, y); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} fmod({base_type}{dimension} x, {base_type}{dimension} y) {{ return {calc_code}; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
+            , calc_code = "_floating_mod(x, y)" if dimension == 1 else "x % y"
         )
 
     # frac	Returns the fractional part of x.	1¹
@@ -560,17 +562,17 @@ class vector_declares:
     saturate = (all_floating_types, dimension_any)
     @staticmethod
     def gen_saturate(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} saturate({base_type}{dimension} x) {{ return clamp(x, 0, 1); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} saturate({base_type}{dimension} x) {{ return clamp({base_type}{dimension}(x), 0, 1); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
         )
 
     # sign	Computes the sign of x.	1¹
-    sign = (all_num_types, dimension_any)
+    sign = (all_has_sign_type, dimension_any)
     @staticmethod
     def gen_sign(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} sign({base_type}{dimension} x) {{ return select(0, select(-1, 1, x < 0), x == 0); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} sign({base_type}{dimension} x) {{ return select(0, select({base_type}{dimension}(-1), {base_type}{dimension}(1), x < 0), x == 0); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -622,7 +624,7 @@ class vector_declares:
     step = (all_floating_types, dimension_any)
     @staticmethod
     def gen_step(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} step({base_type}{dimension} x, {base_type}{dimension} a) {{ return select(1, 0, x >= a); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} step({base_type}{dimension} x, {base_type}{dimension} a) {{ return select({base_type}{dimension}(1), {base_type}{dimension}(0), x >= a); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension

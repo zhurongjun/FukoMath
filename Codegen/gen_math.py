@@ -95,21 +95,22 @@ def gen_vector_arithmetic(type_list:List[str]) -> str:
                 , op_code = op_code)
 
         # gen sign 
-        for op in ["+", "-"]:
-            result += str.format("// {op} {type}\n", type = type, op = op)
-            for dimension in range(2, 5):
-                # gen op code 
-                op_code = str.format("{op}x[0]", op = op)
-                for idx in range(1, dimension):
-                    op_code += str.format(", {op}x[{idx}]", idx = idx, op = op)
-                
-                # gen final code 
-                result += str.format("{inline_marco} {type}{dimension} operator {op} (const {type}{dimension}& x) noexcept {{ return {type}{dimension}({op_code}); }}\n"
-                , inline_marco = config.inline_marco
-                , type = type
-                , dimension = dimension
-                , op = op
-                , op_code = op_code)
+        if type in config.minus_type_list:
+            for op in ["+", "-"]:
+                result += str.format("// {op} {type}\n", type = type, op = op)
+                for dimension in range(2, 5):
+                    # gen op code 
+                    op_code = str.format("{op}x[0]", op = op)
+                    for idx in range(1, dimension):
+                        op_code += str.format(", {op}x[{idx}]", idx = idx, op = op)
+                    
+                    # gen final code 
+                    result += str.format("{inline_marco} {type}{dimension} operator {op} (const {type}{dimension}& x) noexcept {{ return {type}{dimension}({op_code}); }}\n"
+                    , inline_marco = config.inline_marco
+                    , type = type
+                    , dimension = dimension
+                    , op = op
+                    , op_code = op_code)
         
         # gen bool not(!) 
         result += str.format("// {op} {type}\n", type = type, op = "!")

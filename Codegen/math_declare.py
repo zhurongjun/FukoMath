@@ -731,7 +731,7 @@ class matrix_declares:
 
     # mul	Performs matrix multiplication using x and y.	1
     # mul(m, m) mul(m, s) mul(s, m) mul(m, v) mul(v, m)
-    mul = (all_floating_types, lambda row, col: row != 1 or col != 1)
+    mul = (all_num_types, lambda row, col: row != 1 or col != 1)
     @staticmethod
     def gen_mul(base_type:str, row_size:int, col_size:int) -> str:
         result = ""
@@ -845,10 +845,27 @@ class matrix_declares:
     transpose = (all_num_types, lambda row, col: row != 1 or col != 1)
     @staticmethod
     def gen_transpose(base_type:str, row_size:int, col_size:int) -> str:
-        return ""
+        calc_code = ""
+
+        # gen calc code 
+        for col in range(0, col_size):
+            for row in range(0, row_size):
+                calc_code += "x[{row}]{col_idx}, ".format(
+                    row = row
+                    , col_idx = "" if col_size == 1 else "[{col}]".format(col = col)
+                )
+        calc_code = calc_code[0:-2]
+
+        return "{inline_marco} {base_type}{col_size}x{row_size} transpose({base_type}{row_size}x{col_size} x) {{ return {base_type}{col_size}x{row_size}({calc_code}); }}\n".format(
+            inline_marco = inline_marco
+            , base_type = base_type
+            , col_size = col_size
+            , row_size = row_size
+            , calc_code = calc_code
+        )
 
     # inverse 
-    inverse = (all_num_types, lambda row, col: row == col and row > 1)
+    inverse = (all_floating_types, lambda row, col: row == col and row > 1)
     @staticmethod
     def gen_inverse(base_type:str, row_size:int, col_size:int) -> str:
         return ""

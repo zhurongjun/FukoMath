@@ -18,7 +18,7 @@ def recursive_gen_constructor(base_type_name:str, raw_size:int, remain_size:int,
 
         # end params, begin initializer    
         case_str = case_str[0:-2]
-        case_str += ") : pad { "
+        case_str += ") noexcept : pad { "
 
         # gen initializer 
         cur_count = 0
@@ -58,8 +58,8 @@ def gen_constructor_vector(base_type_name:str, size:int) -> str:
     type_name = base_type_name + str(size)
 
     # gen basic swizzle init 
-    result += str.format("\t{inline_marco} {type_name}() : pad {{ 0 }}{{}}\n", inline_marco = config.inline_marco, type_name = type_name)
-    result += str.format("\t{inline_marco} {type_name}({base_type} n) : pad {{ ", inline_marco = config.inline_marco, type_name = type_name, base_type = base_type_name)
+    result += str.format("\t{inline_marco} {type_name}() noexcept : pad {{ 0 }}{{}}\n", inline_marco = config.inline_marco, type_name = type_name)
+    result += str.format("\t{inline_marco} {type_name}({base_type} n) noexcept : pad {{ ", inline_marco = config.inline_marco, type_name = type_name, base_type = base_type_name)
     for i in range(0, size):
         result += "n, "
     result = result[0:-2]
@@ -148,8 +148,8 @@ def gen_type_code_matrix(base_type_name:str) -> str:
 
                 # gen default constructor 
                 result += "\t// constructor\n"
-                result += str.format("\t{inline_marco} {matrix_name}() : pad {{ 0 }} {{}}\n", inline_marco = config.inline_marco, matrix_name = matrix_type_name)
-                result += str.format("\t{inline_marco} {matrix_name}({base_type} n) : pad {{ ", inline_marco = config.inline_marco, base_type = base_type_name, matrix_name = matrix_type_name)
+                result += str.format("\t{inline_marco} {matrix_name}() noexcept : pad {{ 0 }} {{}}\n", inline_marco = config.inline_marco, matrix_name = matrix_type_name)
+                result += str.format("\t{inline_marco} {matrix_name}({base_type} n) noexcept : pad {{ ", inline_marco = config.inline_marco, base_type = base_type_name, matrix_name = matrix_type_name)
                 for i in range(0, row_size * col_size):
                     result += "n, "
                 result = result[0:-2]

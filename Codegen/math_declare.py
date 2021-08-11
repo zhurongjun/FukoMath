@@ -28,7 +28,7 @@ class vector_declares:
         for i in range(1, dimension):
             calc_code += ", c[{i}] ? a[{i}] : b[{i}]".format(i = i)
 
-        return "{inline_marco} {base_type}{dimension} select({base_type}{dimension} a, {base_type}{dimension} b, bool{dimension} c) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} select({base_type}{dimension} a, {base_type}{dimension} b, bool{dimension} c) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -43,7 +43,7 @@ class vector_declares:
         for i in range(1, dimension):
             calc_code += ", x[{i}] && y[{i}]".format(i = i)
 
-        return "{inline_marco} bool{dimension} _and({base_type}{dimension} x, {base_type}{dimension} y) {{ return bool{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} bool{dimension} _and({base_type}{dimension} x, {base_type}{dimension} y) noexcept {{ return bool{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -58,7 +58,7 @@ class vector_declares:
         for i in range(1, dimension):
             calc_code += ", x[{i}] || y[{i}]".format(i = i)
 
-        return "{inline_marco} bool{dimension} _or({base_type}{dimension} x, {base_type}{dimension} y) {{ return bool{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} bool{dimension} _or({base_type}{dimension} x, {base_type}{dimension} y) noexcept {{ return bool{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -69,7 +69,7 @@ class vector_declares:
     abs = (all_has_sign_type, dimension_any)
     @staticmethod
     def gen_abs(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} abs({base_type}{dimension} x) {{ return select({base_type}{dimension}(x), {base_type}{dimension}(-x), x > 0); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} abs({base_type}{dimension} x) noexcept {{ return select({base_type}{dimension}(x), {base_type}{dimension}(-x), x > 0); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -79,7 +79,7 @@ class vector_declares:
     acos = (all_floating_types, dimension_any)
     @staticmethod
     def gen_acos(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} acos({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} acos({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -94,7 +94,7 @@ class vector_declares:
         for i in range(1, dimension):
             calc_code += " && x[{i}]".format(i = i)
 
-        return "{inline_marco} bool all({base_type}{dimension} x) {{ return {calc_code}; }}\n".format(
+        return "{inline_marco} bool all({base_type}{dimension} x) noexcept {{ return {calc_code}; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -109,7 +109,7 @@ class vector_declares:
         for i in range(1, dimension):
             calc_code += " || x[{i}]".format(i = i)
 
-        return "{inline_marco} bool any({base_type}{dimension} x) {{ return {calc_code}; }}\n".format(
+        return "{inline_marco} bool any({base_type}{dimension} x) noexcept {{ return {calc_code}; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -120,7 +120,7 @@ class vector_declares:
     asin = (all_floating_types, dimension_any)
     @staticmethod
     def gen_asin(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} asin({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} asin({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -131,7 +131,7 @@ class vector_declares:
     atan = (all_floating_types, dimension_any)
     @staticmethod
     def gen_atan(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} atan({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} atan({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -142,7 +142,7 @@ class vector_declares:
     atan2 = (all_floating_types, dimension_any)
     @staticmethod
     def gen_atan2(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} atan2({base_type}{dimension} x, {base_type}{dimension} y) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} atan2({base_type}{dimension} x, {base_type}{dimension} y) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -153,7 +153,7 @@ class vector_declares:
     ceil = (all_floating_types, dimension_any)
     @staticmethod
     def gen_ceil(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} ceil({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} ceil({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -164,7 +164,7 @@ class vector_declares:
     clamp = (all_num_types, dimension_any)
     @staticmethod
     def gen_clamp(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} clamp({base_type}{dimension} x, {base_type}{dimension} min, {base_type}{dimension} max) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} clamp({base_type}{dimension} x, {base_type}{dimension} min, {base_type}{dimension} max) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -175,7 +175,7 @@ class vector_declares:
     cos = (all_floating_types, dimension_any)
     @staticmethod
     def gen_cos(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} cos({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} cos({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -186,7 +186,7 @@ class vector_declares:
     cosh = (all_floating_types, dimension_any)
     @staticmethod
     def gen_cosh(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} cosh({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} cosh({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -197,7 +197,7 @@ class vector_declares:
     cross = (all_floating_types, dimension_vector3)
     @staticmethod
     def gen_cross(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} cross({base_type}{dimension} x, {base_type}{dimension} y) {{ return (x * y.yzx - x.yzx * y).yzx; }}\n".format(
+        return "{inline_marco} {base_type}{dimension} cross({base_type}{dimension} x, {base_type}{dimension} y) noexcept {{ return (x * y.yzx - x.yzx * y).yzx; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -211,7 +211,7 @@ class vector_declares:
         for i in range(1, dimension):
             calc_code += ", x[{i}] / PI * 180".format(i = i)
 
-        return "{inline_marco} {base_type}{dimension} degrees({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} degrees({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -226,7 +226,7 @@ class vector_declares:
         for i in range(1, dimension):
             calc_code += "+ x[{i}] * y[{i}]".format(i = i)
 
-        return "{inline_marco} {base_type} dot({base_type}{dimension} x, {base_type}{dimension} y) {{ return {calc_code}; }}\n".format(
+        return "{inline_marco} {base_type} dot({base_type}{dimension} x, {base_type}{dimension} y) noexcept {{ return {calc_code}; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -237,7 +237,7 @@ class vector_declares:
     sqrt = (all_floating_types, dimension_any)
     @staticmethod
     def gen_sqrt(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} sqrt({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} sqrt({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -248,7 +248,7 @@ class vector_declares:
     rsqrt = (all_floating_types, dimension_any)
     @staticmethod
     def gen_rsqrt(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} rsqrt({base_type}{dimension} x) {{ return 1 / sqrt(x); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} rsqrt({base_type}{dimension} x) noexcept {{ return 1 / sqrt(x); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -258,7 +258,7 @@ class vector_declares:
     length = (all_floating_types, dimension_any)
     @staticmethod
     def gen_length(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type} length({base_type}{dimension} x) {{ return {calc_code}; }}\n".format(
+        return "{inline_marco} {base_type} length({base_type}{dimension} x) noexcept {{ return {calc_code}; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -269,7 +269,7 @@ class vector_declares:
     distance = (all_floating_types, dimension_any)
     @staticmethod
     def gen_distance(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type} length({base_type}{dimension} x, {base_type}{dimension} y) {{ return {calc_code}; }}\n".format(
+        return "{inline_marco} {base_type} length({base_type}{dimension} x, {base_type}{dimension} y) noexcept {{ return {calc_code}; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -280,7 +280,7 @@ class vector_declares:
     exp = (all_floating_types, dimension_any)
     @staticmethod
     def gen_exp(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} exp({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} exp({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -291,7 +291,7 @@ class vector_declares:
     exp2 = (all_floating_types, dimension_any)
     @staticmethod
     def gen_exp2(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} exp2({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} exp2({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -302,7 +302,7 @@ class vector_declares:
     floor = (all_floating_types, dimension_any)
     @staticmethod
     def gen_floor(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} floor({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} floor({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -313,7 +313,7 @@ class vector_declares:
     fma = (all_floating_types, dimension_any)
     @staticmethod
     def gen_fma(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} fma({base_type}{dimension} a, {base_type}{dimension} b, {base_type}{dimension} c) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} fma({base_type}{dimension} a, {base_type}{dimension} b, {base_type}{dimension} c) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -324,7 +324,7 @@ class vector_declares:
     fmod = (all_floating_types, dimension_any)
     @staticmethod
     def gen_fmod(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} fmod({base_type}{dimension} x, {base_type}{dimension} y) {{ return {calc_code}; }}\n".format(
+        return "{inline_marco} {base_type}{dimension} fmod({base_type}{dimension} x, {base_type}{dimension} y) noexcept {{ return {calc_code}; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -335,7 +335,7 @@ class vector_declares:
     frac = (all_floating_types, dimension_any)
     @staticmethod
     def gen_frac(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} frac({base_type}{dimension} x) {{ return x - floor(x); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} frac({base_type}{dimension} x) noexcept {{ return x - floor(x); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -345,7 +345,7 @@ class vector_declares:
     frexp = (all_floating_types, dimension_any)
     @staticmethod
     def gen_frexp(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} frexp({base_type}{dimension} x, {base_type}{dimension}& exp) {{ int{dimension} iexp; {base_type}{dimension} ret = {base_type}{dimension}({calc_code}); exp = ({base_type}{dimension})iexp; return ret; }}\n".format(
+        return "{inline_marco} {base_type}{dimension} frexp({base_type}{dimension} x, {base_type}{dimension}& exp) noexcept {{ int{dimension} iexp; {base_type}{dimension} ret = {base_type}{dimension}({calc_code}); exp = ({base_type}{dimension})iexp; return ret; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -356,7 +356,7 @@ class vector_declares:
     isfinite = (all_floating_types, dimension_any)
     @staticmethod
     def gen_isfinite(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} isfinite({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} isfinite({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -367,7 +367,7 @@ class vector_declares:
     isinf = (all_floating_types, dimension_any)
     @staticmethod
     def gen_isinf(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} isinf({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} isinf({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -378,7 +378,7 @@ class vector_declares:
     isnan = (all_floating_types, dimension_any)
     @staticmethod
     def gen_isnan(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} isnan({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} isnan({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -389,7 +389,7 @@ class vector_declares:
     ldexp = (all_floating_types, dimension_any)
     @staticmethod
     def gen_ldexp(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} ldexp({base_type}{dimension} x, {base_type}{dimension} exp) {{ return x + exp2(exp); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} ldexp({base_type}{dimension} x, {base_type}{dimension} exp) noexcept {{ return x + exp2(exp); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -399,7 +399,7 @@ class vector_declares:
     lerp = (all_floating_types, dimension_any)
     @staticmethod
     def gen_lerp(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} lerp({base_type}{dimension} x, {base_type}{dimension} y, {base_type}{dimension} s) {{ return x + s * (y - x); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} lerp({base_type}{dimension} x, {base_type}{dimension} y, {base_type}{dimension} s) noexcept {{ return x + s * (y - x); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -409,7 +409,7 @@ class vector_declares:
     log = (all_floating_types, dimension_any)
     @staticmethod
     def gen_log(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} log({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} log({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -420,7 +420,7 @@ class vector_declares:
     log10 = (all_floating_types, dimension_any)
     @staticmethod
     def gen_log10(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} log10({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} log10({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -431,7 +431,7 @@ class vector_declares:
     log2 = (all_floating_types, dimension_any)
     @staticmethod
     def gen_log2(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} log2({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} log2({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -442,7 +442,7 @@ class vector_declares:
     mad = (all_num_types, dimension_any)
     @staticmethod
     def gen_mad(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} mad({base_type}{dimension} m, {base_type}{dimension} a, {base_type}{dimension} b) {{ return m * a + b; }}\n".format(
+        return "{inline_marco} {base_type}{dimension} mad({base_type}{dimension} m, {base_type}{dimension} a, {base_type}{dimension} b) noexcept {{ return m * a + b; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -452,7 +452,7 @@ class vector_declares:
     max = (all_num_types, dimension_any)
     @staticmethod
     def gen_max(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} max({base_type}{dimension} x, {base_type}{dimension} y) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} max({base_type}{dimension} x, {base_type}{dimension} y) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -463,7 +463,7 @@ class vector_declares:
     min = (all_num_types, dimension_any)
     @staticmethod
     def gen_min(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} min({base_type}{dimension} x, {base_type}{dimension} y) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} min({base_type}{dimension} x, {base_type}{dimension} y) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -474,7 +474,7 @@ class vector_declares:
     modf = (all_floating_types, dimension_any)
     @staticmethod
     def gen_modf(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} modf({base_type}{dimension} x, int{dimension}& ip) {{ {base_type}{dimension} fip; {base_type}{dimension} ret = {base_type}{dimension}({calc_code}); ip = (int{dimension})fip; return ret; }}\n".format(
+        return "{inline_marco} {base_type}{dimension} modf({base_type}{dimension} x, int{dimension}& ip) noexcept {{ {base_type}{dimension} fip; {base_type}{dimension} ret = {base_type}{dimension}({calc_code}); ip = (int{dimension})fip; return ret; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -485,7 +485,7 @@ class vector_declares:
     normalize = (all_floating_types, dimension_any)
     @staticmethod
     def gen_normalize(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} normalize({base_type}{dimension} x) {{ return x / length(x); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} normalize({base_type}{dimension} x) noexcept {{ return x / length(x); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -495,7 +495,7 @@ class vector_declares:
     pow = (all_floating_types, dimension_any)
     @staticmethod
     def gen_pow(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} pow({base_type}{dimension} x, {base_type}{dimension} y) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} pow({base_type}{dimension} x, {base_type}{dimension} y) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -510,7 +510,7 @@ class vector_declares:
         for i in range(1, dimension):
             calc_code += ", x[{i}] / 180 * PI".format(i = i)
 
-        return "{inline_marco} {base_type}{dimension} radians({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} radians({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -521,7 +521,7 @@ class vector_declares:
     rcp = (all_floating_types, dimension_any)
     @staticmethod
     def gen_rcp(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} rcp({base_type}{dimension} x) {{ return 1 / x; }}\n".format(
+        return "{inline_marco} {base_type}{dimension} rcp({base_type}{dimension} x) noexcept {{ return 1 / x; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -531,7 +531,7 @@ class vector_declares:
     reflect = (all_floating_types, dimension_any)
     @staticmethod
     def gen_reflect(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} reflect({base_type}{dimension} i, {base_type}{dimension} n) {{ return i - 2 * n * dot(i, n); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} reflect({base_type}{dimension} i, {base_type}{dimension} n) noexcept {{ return i - 2 * n * dot(i, n); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -541,7 +541,7 @@ class vector_declares:
     refract = (all_floating_types, dimension_any)
     @staticmethod
     def gen_refract(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} refract({base_type}{dimension} i, {base_type}{dimension} n, {base_type} eta) {{ {base_type} ni = dot(n, i); {base_type} k = 1 - eta * eta * (1 - ni * ni); return select({base_type}(0), eta * i - (eta * ni + sqrt(k)) * n, k >= 0); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} refract({base_type}{dimension} i, {base_type}{dimension} n, {base_type} eta) noexcept {{ {base_type} ni = dot(n, i); {base_type} k = 1 - eta * eta * (1 - ni * ni); return select({base_type}(0), eta * i - (eta * ni + sqrt(k)) * n, k >= 0); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -551,7 +551,7 @@ class vector_declares:
     round = (all_floating_types, dimension_any)
     @staticmethod
     def gen_round(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} round({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} round({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -562,7 +562,7 @@ class vector_declares:
     saturate = (all_floating_types, dimension_any)
     @staticmethod
     def gen_saturate(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} saturate({base_type}{dimension} x) {{ return clamp({base_type}{dimension}(x), {base_type}{dimension}(0), {base_type}{dimension}(1)); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} saturate({base_type}{dimension} x) noexcept {{ return clamp({base_type}{dimension}(x), {base_type}{dimension}(0), {base_type}{dimension}(1)); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -572,7 +572,7 @@ class vector_declares:
     sign = (all_has_sign_type, dimension_any)
     @staticmethod
     def gen_sign(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} sign({base_type}{dimension} x) {{ return select({base_type}{dimension}(0), select({base_type}{dimension}(-1), {base_type}{dimension}(1), x < 0), x == 0); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} sign({base_type}{dimension} x) noexcept {{ return select({base_type}{dimension}(0), select({base_type}{dimension}(-1), {base_type}{dimension}(1), x < 0), x == 0); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -582,7 +582,7 @@ class vector_declares:
     sin = (all_floating_types, dimension_any)
     @staticmethod
     def gen_sin(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} sin({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} sin({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -593,7 +593,7 @@ class vector_declares:
     sincos = (all_floating_types, dimension_any)
     @staticmethod
     def gen_sincos(base_type:str, dimension:int) -> str:
-        return "{inline_marco} void sincos({base_type}{dimension} x, {base_type}{dimension}& s, {base_type}{dimension}& c) {{ s = sin(x); c = cos(x); }}\n".format(
+        return "{inline_marco} void sincos({base_type}{dimension} x, {base_type}{dimension}& s, {base_type}{dimension}& c) noexcept {{ s = sin(x); c = cos(x); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -603,7 +603,7 @@ class vector_declares:
     sinh = (all_floating_types, dimension_any)
     @staticmethod
     def gen_sinh(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} sinh({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} sinh({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -614,7 +614,7 @@ class vector_declares:
     smoothstep = (all_floating_types, dimension_any)
     @staticmethod
     def gen_smoothstep(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} smoothstep({base_type}{dimension} a, {base_type}{dimension} b, {base_type}{dimension} x) {{ {base_type}{dimension}  t = saturate((x - a) / (b - a)); return t * t * (3 - (2 - t)); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} smoothstep({base_type}{dimension} a, {base_type}{dimension} b, {base_type}{dimension} x) noexcept {{ {base_type}{dimension}  t = saturate((x - a) / (b - a)); return t * t * (3 - (2 - t)); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -624,7 +624,7 @@ class vector_declares:
     step = (all_floating_types, dimension_any)
     @staticmethod
     def gen_step(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} step({base_type}{dimension} x, {base_type}{dimension} a) {{ return select({base_type}{dimension}(1), {base_type}{dimension}(0), x >= a); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} step({base_type}{dimension} x, {base_type}{dimension} a) noexcept {{ return select({base_type}{dimension}(1), {base_type}{dimension}(0), x >= a); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -634,7 +634,7 @@ class vector_declares:
     tan = (all_floating_types, dimension_any)
     @staticmethod
     def gen_tan(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} tan({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} tan({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -645,7 +645,7 @@ class vector_declares:
     tanh = (all_floating_types, dimension_any)
     @staticmethod
     def gen_tanh(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} tanh({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} tanh({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -656,7 +656,7 @@ class vector_declares:
     trunc = (all_floating_types, dimension_any)
     @staticmethod
     def gen_trunc(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} trunc({base_type}{dimension} x) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} trunc({base_type}{dimension} x) noexcept {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -723,7 +723,7 @@ class matrix_declares:
     determinant = (all_floating_types, lambda row, col: row == col and row > 1)
     @staticmethod
     def gen_determinant(base_type:str, row_size:int, col_size:int) -> str:
-        return "{inline_marco} {base_type} determinant({base_type}{row_size}x{col_size} x) {{ return {calc_code}; }}\n".format(
+        return "{inline_marco} {base_type} determinant({base_type}{row_size}x{col_size} x) noexcept {{ return {calc_code}; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , row_size = row_size
@@ -759,7 +759,7 @@ class matrix_declares:
                     calc_code = calc_code[0:-3] + ", "
             calc_code = calc_code[0:-2]
 
-            result += "{inline_marco} {base_type}{row_size}x{rhs_col_size} mul({base_type}{row_size}x{col_size} x, {base_type}{rhs_row_size}x{rhs_col_size} y) {{ return {base_type}{row_size}x{rhs_col_size}({calc_code}); }}\n".format(
+            result += "{inline_marco} {base_type}{row_size}x{rhs_col_size} mul({base_type}{row_size}x{col_size} x, {base_type}{rhs_row_size}x{rhs_col_size} y) noexcept {{ return {base_type}{row_size}x{rhs_col_size}({calc_code}); }}\n".format(
                 inline_marco = inline_marco
             , base_type = base_type
             , row_size = row_size
@@ -785,7 +785,7 @@ class matrix_declares:
 
             calc_code = calc_code[0:-2]
 
-            result += "{inline_marco} {base_type}{row_size_v} mul({base_type}{row_size}x{col_size} x, {base_type}{col_size_v} y) {{ return {base_type}{row_size_v}({calc_code}); }}\n".format(
+            result += "{inline_marco} {base_type}{row_size_v} mul({base_type}{row_size}x{col_size} x, {base_type}{col_size_v} y) noexcept {{ return {base_type}{row_size_v}({calc_code}); }}\n".format(
                     inline_marco = inline_marco
                 , base_type = base_type
                 , row_size = row_size
@@ -811,7 +811,7 @@ class matrix_declares:
 
             calc_code = calc_code[0:-2]
 
-            result += "{inline_marco} {base_type}{col_size_v} mul({base_type}{row_size_v} x, {base_type}{row_size}x{col_size} y) {{ return {base_type}{col_size_v}({calc_code}); }}\n".format(
+            result += "{inline_marco} {base_type}{col_size_v} mul({base_type}{row_size_v} x, {base_type}{row_size}x{col_size} y) noexcept {{ return {base_type}{col_size_v}({calc_code}); }}\n".format(
                 inline_marco = inline_marco
                 , base_type = base_type
                 , row_size = row_size
@@ -831,7 +831,7 @@ class matrix_declares:
                 )
         calc_code = calc_code[0:-2]
 
-        result += "{inline_marco} {base_type}{row_size}x{col_size} mul({base_type}{row_size}x{col_size} x, {base_type} y) {{ return {base_type}{row_size}x{col_size}({calc_code}); }}\n".format(
+        result += "{inline_marco} {base_type}{row_size}x{col_size} mul({base_type}{row_size}x{col_size} x, {base_type} y) noexcept {{ return {base_type}{row_size}x{col_size}({calc_code}); }}\n".format(
             inline_marco = inline_marco
             , base_type = base_type
             , row_size = row_size
@@ -840,6 +840,22 @@ class matrix_declares:
         )
 
         # mul(s, m)
+        calc_code = ""
+        for row in range(0, row_size):
+            for col in range(0, col_size):
+                calc_code += "x * y[{row}]{col_idx}, ".format(
+                    row = row
+                    , col_idx = "" if col_size == 1 else "[{col}]".format(col = col)
+                )
+        calc_code = calc_code[0:-2]
+
+        result += "{inline_marco} {base_type}{row_size}x{col_size} mul({base_type} x, {base_type}{row_size}x{col_size} y) noexcept {{ return {base_type}{row_size}x{col_size}({calc_code}); }}\n".format(
+            inline_marco = inline_marco
+            , base_type = base_type
+            , row_size = row_size
+            , col_size = col_size
+            , calc_code = calc_code
+        )
 
         return result
     

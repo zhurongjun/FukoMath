@@ -164,11 +164,11 @@ class vector_declares:
     clamp = (all_num_types, dimension_any)
     @staticmethod
     def gen_clamp(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} clamp({base_type}{dimension} x, {base_type} min, {base_type} max) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} clamp({base_type}{dimension} x, {base_type}{dimension} min, {base_type}{dimension} max) {{ return {base_type}{dimension}({calc_code}); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
-            , calc_code = loop_call_std_method("clamp", "x{idx}, min, max", dimension)
+            , calc_code = loop_call_std_method("clamp", "x{idx}, min{idx}, max{idx}", dimension)
         )
 
     # cos	Returns the cosine of x.	1¹
@@ -345,7 +345,7 @@ class vector_declares:
     frexp = (all_floating_types, dimension_any)
     @staticmethod
     def gen_frexp(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} frexp({base_type}{dimension} x, {base_type}{dimension}& exp) {{ int{dimension} iexp; {base_type}{dimension} ret = {base_type}{dimension}({calc_code}); exp = iexp; return ret; }}\n".format(
+        return "{inline_marco} {base_type}{dimension} frexp({base_type}{dimension} x, {base_type}{dimension}& exp) {{ int{dimension} iexp; {base_type}{dimension} ret = {base_type}{dimension}({calc_code}); exp = ({base_type}{dimension})iexp; return ret; }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -541,7 +541,7 @@ class vector_declares:
     refract = (all_floating_types, dimension_any)
     @staticmethod
     def gen_refract(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} refract({base_type}{dimension} i, {base_type}{dimension} n, {base_type} eta) {{ {base_type} ni = dot(n, i); {base_type} k = 1 - eta * eta * (1 - ni * ni); return select(0, eta * i - (eta * ni + sqrt(k)) * n, k >= 0); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} refract({base_type}{dimension} i, {base_type}{dimension} n, {base_type} eta) {{ {base_type} ni = dot(n, i); {base_type} k = 1 - eta * eta * (1 - ni * ni); return select({base_type}(0), eta * i - (eta * ni + sqrt(k)) * n, k >= 0); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -562,7 +562,7 @@ class vector_declares:
     saturate = (all_floating_types, dimension_any)
     @staticmethod
     def gen_saturate(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} saturate({base_type}{dimension} x) {{ return clamp({base_type}{dimension}(x), 0, 1); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} saturate({base_type}{dimension} x) {{ return clamp({base_type}{dimension}(x), {base_type}{dimension}(0), {base_type}{dimension}(1)); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
@@ -572,7 +572,7 @@ class vector_declares:
     sign = (all_has_sign_type, dimension_any)
     @staticmethod
     def gen_sign(base_type:str, dimension:int) -> str:
-        return "{inline_marco} {base_type}{dimension} sign({base_type}{dimension} x) {{ return select(0, select({base_type}{dimension}(-1), {base_type}{dimension}(1), x < 0), x == 0); }}\n".format(
+        return "{inline_marco} {base_type}{dimension} sign({base_type}{dimension} x) {{ return select({base_type}{dimension}(0), select({base_type}{dimension}(-1), {base_type}{dimension}(1), x < 0), x == 0); }}\n".format(
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension

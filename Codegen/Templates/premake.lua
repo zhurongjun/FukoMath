@@ -103,43 +103,49 @@ workspace("fuko_math")
 			toolset("msc")
 			architecture("x64")
 			vectorextensions("avx2")
+			buildoptions { "/d1reportTimeSummary" }
 		
 		filter { "platforms:"..PlatformMSVC64AVX }
 			toolset("msc")
 			architecture("x64")
 			vectorextensions("avx")
+			buildoptions { "/d1reportTimeSummary" }
 		
 		filter { "platforms:"..PlatformMSVC64SSE41 }
 			toolset("msc")
 			architecture("x64")
 			vectorextensions("sse4.1")
 			defines { "__SSE4_1__" }
+			buildoptions { "/d1reportTimeSummary" }
 			
 		filter { "platforms:"..PlatformMSVC64SSE2 }
 			toolset("msc")
 			architecture("x64")
 			vectorextensions("sse2")
+			buildoptions { "/d1reportTimeSummary" }
 			
 		filter { "platforms:"..PlatformMSVC64Scalar }
 			toolset("msc")
 			architecture("x64")
+			buildoptions { "/d1reportTimeSummary" }
 		
 		filter { "platforms:"..PlatformMSVC32SSE2 }
 			toolset("msc")
 			vectorextensions("sse2")
+			buildoptions { "/d1reportTimeSummary" }
 			
 		filter { "platforms:"..PlatformLLVM64AVX }
 			toolset(llvmToolset)
 			architecture("x64")
 			vectorextensions("avx")
-			buildoptions { "-Wno-unused-variable -mavx" }
+			buildoptions { "-Wno-unused-variable -mavx", "/d1reportTimeSummary" }
 			
 		filter { "platforms:"..PlatformLLVM64SSE41 }
 			toolset(llvmToolset)
 			architecture("x64")
 			vectorextensions("sse4.1")
 			defines { "__SSE4_1__" }
-			buildoptions { "-Wno-unused-variable -msse4.1" }
+			buildoptions { "-Wno-unused-variable -msse4.1", "/d1reportTimeSummary" }
 			
 		filter { "platforms:"..PlatformLLVM64SSE2 }
 			toolset(llvmToolset)
@@ -148,7 +154,7 @@ workspace("fuko_math")
 			
 		filter { "platforms:"..PlatformLLVM32SSE2 }
 			toolset(llvmToolset)
-			buildoptions { "-Wno-unused-variable" }
+			buildoptions { "-Wno-unused-variable", "/d1reportTimeSummary" }
 
 		filter{}
 	end

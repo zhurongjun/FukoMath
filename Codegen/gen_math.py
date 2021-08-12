@@ -155,6 +155,7 @@ def gen_swizzle_arithmetic() -> str:
     for op in ["+", "-", "*", "/"]:
         result += str.format("// swizzle {op} vector\n", op = op)
         for dimension in range(1, 5):
+            #################################################### swizzle vector ####################################################
             # gen op code 
             op_code = ""
             for idx in range(0, dimension):
@@ -206,6 +207,51 @@ def gen_swizzle_arithmetic() -> str:
             , template_code = template_code
             , assign_code = assign_code)
 
+            #################################################### swizzle scalar ####################################################
+            if dimension != 1:
+            # gen op code 
+                op_code = ""
+                for idx in range(0, dimension):
+                    op_code += str.format(", pLsh[{swizzle_idx}] {op} rsh", idx = idx, swizzle_idx = util.math_swizzle_pad[idx], op = op)
+                op_code = op_code[2:]
+
+                # gen final code 
+                result += '''template<bool has_assign, typename base_type, typename target_type{template_code}> 
+{inline_marco} target_type operator {op} (const Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& lsh, const base_type& rsh) noexcept 
+{{ 
+    const base_type* pLsh = reinterpret_cast<const base_type*>(&lsh);
+
+    return target_type({op_code}); 
+}}\n'''.format(
+                inline_marco = config.inline_marco
+                , dimension = dimension
+                , op = op
+                , op_code = op_code
+                , template_code = template_code
+                , assign_code = assign_code)
+
+                # gen op code 
+                op_code = ""
+                for idx in range(0, dimension):
+                    op_code += str.format(", lsh {op} pRsh[{swizzle_idx}]", idx = idx, swizzle_idx = util.math_swizzle_pad[idx], op = op)
+                op_code = op_code[2:]
+
+                # gen final code 
+                result += '''template<bool has_assign, typename base_type, typename target_type{template_code}> 
+{inline_marco} target_type operator {op} (const base_type& lsh, const Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& rsh) noexcept 
+{{ 
+    const base_type* pRsh = reinterpret_cast<const base_type*>(&rsh);
+
+    return target_type({op_code}); 
+}}\n'''.format(
+                inline_marco = config.inline_marco
+                , dimension = dimension
+                , op = op
+                , op_code = op_code
+                , template_code = template_code
+                , assign_code = assign_code)
+
+            #################################################### swizzle siwzzle ####################################################
             # gen op code 
             op_code = ""
             for idx in range(0, dimension):
@@ -220,8 +266,8 @@ def gen_swizzle_arithmetic() -> str:
                 assign_code_r += ", {name}_r".format(name = util.math_swizzle_pad[idx])
 
             # gen final code 
-            result += '''template<bool has_assign, typename base_type, typename target_type{template_code}{template_code_r}> 
-{inline_marco} target_type operator {op} (const Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& lsh, const Swizzle{dimension}<has_assign, base_type, target_type{assign_code_r}>& rsh) noexcept 
+            result += '''template<bool has_assign, bool has_assign_r, typename base_type, typename target_type{template_code}{template_code_r}> 
+{inline_marco} target_type operator {op} (const Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& lsh, const Swizzle{dimension}<has_assign_r, base_type, target_type{assign_code_r}>& rsh) noexcept 
 {{ 
     const base_type* pLsh = reinterpret_cast<const base_type*>(&lsh);
     const base_type* pRsh = reinterpret_cast<const base_type*>(&rsh);
@@ -242,6 +288,7 @@ def gen_swizzle_arithmetic() -> str:
     op = "%"
     result += str.format("// swizzle {op} vector\n", op = op)
     for dimension in range(1, 5):
+        #################################################### swizzle vector ####################################################
         # gen op code 
         op_code = ""
         for idx in range(0, dimension):
@@ -293,6 +340,52 @@ def gen_swizzle_arithmetic() -> str:
         , template_code = template_code
         , assign_code = assign_code)
 
+        #################################################### swizzle scalar ####################################################
+        if dimension != 1:
+        # gen op code 
+            op_code = ""
+            for idx in range(0, dimension):
+                op_code += str.format(", _mod(pLsh[{swizzle_idx}], rsh)", idx = idx, swizzle_idx = util.math_swizzle_pad[idx], op = op)
+            op_code = op_code[2:]
+
+            # gen final code 
+            result += '''template<bool has_assign, typename base_type, typename target_type{template_code}> 
+{inline_marco} target_type operator {op} (const Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& lsh, const base_type& rsh) noexcept 
+{{ 
+    const base_type* pLsh = reinterpret_cast<const base_type*>(&lsh);
+
+    return target_type({op_code}); 
+}}\n'''.format(
+            inline_marco = config.inline_marco
+            , dimension = dimension
+            , op = op
+            , op_code = op_code
+            , template_code = template_code
+            , assign_code = assign_code)
+
+            # gen op code 
+            op_code = ""
+            for idx in range(0, dimension):
+                op_code += str.format(", _mod(lsh, pRsh[{swizzle_idx}])", idx = idx, swizzle_idx = util.math_swizzle_pad[idx], op = op)
+            op_code = op_code[2:]
+
+            # gen final code 
+            result += '''template<bool has_assign, typename base_type, typename target_type{template_code}> 
+{inline_marco} target_type operator {op} (const base_type& lsh, const Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& rsh) noexcept 
+{{ 
+    const base_type* pRsh = reinterpret_cast<const base_type*>(&rsh);
+
+    return target_type({op_code}); 
+}}\n'''.format(
+            inline_marco = config.inline_marco
+            , dimension = dimension
+            , op = op
+            , op_code = op_code
+            , template_code = template_code
+            , assign_code = assign_code)
+
+
+        #################################################### swizzle swizzle ####################################################
         # gen op code 
         op_code = ""
         for idx in range(0, dimension):
@@ -333,6 +426,7 @@ def gen_swizzle_arithmetic_assign() -> str:
     for op in ["+=", "-=", "*=", "/="]:
         result += str.format("// swizzle {op} vector\n", op = op)
         for dimension in range(1, 5):
+            #################################################### swizzle vector ####################################################
             # gen op code 
             op_code = ""
             for idx in range(0, dimension):
@@ -346,8 +440,8 @@ def gen_swizzle_arithmetic_assign() -> str:
                 assign_code += ", {name}".format(name = util.math_swizzle_pad[idx])
             
             # gen final code 
-            result += '''template<bool has_assign, typename base_type, typename target_type{template_code}> 
-{inline_marco} Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& operator {op} (Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& lsh, const target_type& rsh) noexcept 
+            result += '''template<typename base_type, typename target_type{template_code}> 
+{inline_marco} Swizzle{dimension}<true, base_type, target_type{assign_code}>& operator {op} (Swizzle{dimension}<true, base_type, target_type{assign_code}>& lsh, const target_type& rsh) noexcept 
 {{ 
     base_type* pLsh = reinterpret_cast<base_type*>(&lsh);
     const base_type* pRsh = reinterpret_cast<const base_type*>(&rsh);
@@ -361,28 +455,6 @@ def gen_swizzle_arithmetic_assign() -> str:
             , op_code = op_code
             , template_code = template_code
             , assign_code = assign_code)
-
-            if dimension != 1:
-                # gen op code 
-                op_code = ""
-                for idx in range(0, dimension):
-                    op_code += str.format("\tpLsh[{swizzle_idx}] = pLsh[{swizzle_idx}] {op} rsh;\n", idx = idx, swizzle_idx = util.math_swizzle_pad[idx], op = op[:1])
-                
-                # gen final code 
-                result += '''template<bool has_assign, typename base_type, typename target_type{template_code}> 
-{inline_marco} Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& operator {op} (Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& lsh, const base_type rsh) noexcept 
-{{ 
-    base_type* pLsh = reinterpret_cast<base_type*>(&lsh);
-
-{op_code}
-    return lsh; 
-}}\n'''.format(
-                inline_marco = config.inline_marco
-                , dimension = dimension
-                , op = op
-                , op_code = op_code
-                , template_code = template_code
-                , assign_code = assign_code)
 
             # gen op code 
             op_code = ""
@@ -406,6 +478,30 @@ def gen_swizzle_arithmetic_assign() -> str:
             , template_code = template_code
             , assign_code = assign_code)
 
+            #################################################### swizzle scalar ####################################################
+            if dimension != 1:
+                # gen op code 
+                op_code = ""
+                for idx in range(0, dimension):
+                    op_code += str.format("\tpLsh[{swizzle_idx}] = pLsh[{swizzle_idx}] {op} rsh;\n", idx = idx, swizzle_idx = util.math_swizzle_pad[idx], op = op[:1])
+                
+                # gen final code 
+                result += '''template<typename base_type, typename target_type{template_code}> 
+{inline_marco} Swizzle{dimension}<true, base_type, target_type{assign_code}>& operator {op} (Swizzle{dimension}<true, base_type, target_type{assign_code}>& lsh, const base_type rsh) noexcept 
+{{ 
+    base_type* pLsh = reinterpret_cast<base_type*>(&lsh);
+
+{op_code}
+    return lsh; 
+}}\n'''.format(
+                inline_marco = config.inline_marco
+                , dimension = dimension
+                , op = op
+                , op_code = op_code
+                , template_code = template_code
+                , assign_code = assign_code)
+
+            #################################################### swizzle swizzle ####################################################
             # gen op code 
             op_code = ""
             for idx in range(0, dimension):
@@ -420,7 +516,7 @@ def gen_swizzle_arithmetic_assign() -> str:
 
             # gen final code 
             result += '''template<bool has_assign, typename base_type, typename target_type{template_code}{template_code_r}> 
-{inline_marco} Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& operator {op} (Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& lsh, const Swizzle{dimension}<has_assign, base_type, target_type{assign_code_r}>& rsh) noexcept 
+{inline_marco} Swizzle{dimension}<true, base_type, target_type{assign_code}>& operator {op} (Swizzle{dimension}<true, base_type, target_type{assign_code}>& lsh, const Swizzle{dimension}<has_assign, base_type, target_type{assign_code_r}>& rsh) noexcept 
 {{ 
     base_type* pLsh = reinterpret_cast<base_type*>(&lsh);
     const base_type* pRsh = reinterpret_cast<const base_type*>(&rsh);
@@ -442,6 +538,7 @@ def gen_swizzle_arithmetic_assign() -> str:
     op = "%="
     result += str.format("// swizzle {op} vector\n", op = op)
     for dimension in range(1, 5):
+        #################################################### swizzle vector ####################################################
         # gen op code 
         op_code = ""
         for idx in range(0, dimension):
@@ -455,8 +552,8 @@ def gen_swizzle_arithmetic_assign() -> str:
             assign_code += ", {name}".format(name = util.math_swizzle_pad[idx])
         
         # gen final code 
-        result += '''template<bool has_assign, typename base_type, typename target_type{template_code}> 
-{inline_marco} Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& operator {op} (Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& lsh, const target_type& rsh) noexcept 
+        result += '''template<typename base_type, typename target_type{template_code}> 
+{inline_marco} Swizzle{dimension}<true, base_type, target_type{assign_code}>& operator {op} (Swizzle{dimension}<true, base_type, target_type{assign_code}>& lsh, const target_type& rsh) noexcept 
 {{ 
     base_type* pLsh = reinterpret_cast<base_type*>(&lsh);
     const base_type* pRsh = reinterpret_cast<const base_type*>(&rsh);
@@ -471,36 +568,7 @@ def gen_swizzle_arithmetic_assign() -> str:
         , template_code = template_code
         , assign_code = assign_code)
 
-        if dimension != 1:
-            # gen op code 
-            op_code = ""
-            for idx in range(0, dimension):
-                op_code += str.format("\tpLsh[{swizzle_idx}] = _mod(pLsh[{swizzle_idx}], rsh);\n", idx = idx, swizzle_idx = util.math_swizzle_pad[idx])
-
-            # gen template code 
-            template_code = ""
-            assign_code = ""
-            for idx in range(0, dimension):
-                template_code += ", uint32_t {name}".format(name = util.math_swizzle_pad[idx])
-                assign_code += ", {name}".format(name = util.math_swizzle_pad[idx])
-            
-            # gen final code 
-            result += '''template<bool has_assign, typename base_type, typename target_type{template_code}> 
-{inline_marco} Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& operator {op} (Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& lsh, const base_type rsh) noexcept 
-{{ 
-    base_type* pLsh = reinterpret_cast<base_type*>(&lsh);
-
-{op_code}
-    return lsh; 
-}}\n'''.format(
-            inline_marco = config.inline_marco
-            , dimension = dimension
-            , op = op
-            , op_code = op_code
-            , template_code = template_code
-            , assign_code = assign_code)
-        
-        # gen op code 
+         # gen op code 
         op_code = ""
         for idx in range(0, dimension):
             op_code += str.format("\tpLsh[{idx}] = _mod(pLsh[{idx}], pRsh[{swizzle_idx}]);\n", idx = idx, swizzle_idx = util.math_swizzle_pad[idx])
@@ -522,6 +590,37 @@ def gen_swizzle_arithmetic_assign() -> str:
         , template_code = template_code
         , assign_code = assign_code)
 
+        #################################################### swizzle scalar ####################################################
+        if dimension != 1:
+            # gen op code 
+            op_code = ""
+            for idx in range(0, dimension):
+                op_code += str.format("\tpLsh[{swizzle_idx}] = _mod(pLsh[{swizzle_idx}], rsh);\n", idx = idx, swizzle_idx = util.math_swizzle_pad[idx])
+
+            # gen template code 
+            template_code = ""
+            assign_code = ""
+            for idx in range(0, dimension):
+                template_code += ", uint32_t {name}".format(name = util.math_swizzle_pad[idx])
+                assign_code += ", {name}".format(name = util.math_swizzle_pad[idx])
+            
+            # gen final code 
+            result += '''template<typename base_type, typename target_type{template_code}> 
+{inline_marco} Swizzle{dimension}<true, base_type, target_type{assign_code}>& operator {op} (Swizzle{dimension}<true, base_type, target_type{assign_code}>& lsh, const base_type rsh) noexcept 
+{{ 
+    base_type* pLsh = reinterpret_cast<base_type*>(&lsh);
+
+{op_code}
+    return lsh; 
+}}\n'''.format(
+            inline_marco = config.inline_marco
+            , dimension = dimension
+            , op = op
+            , op_code = op_code
+            , template_code = template_code
+            , assign_code = assign_code)
+
+        #################################################### swizzle swizzle ####################################################
         # gen op code 
         op_code = ""
         for idx in range(0, dimension):
@@ -536,7 +635,7 @@ def gen_swizzle_arithmetic_assign() -> str:
 
         # gen final code 
         result += '''template<bool has_assign, typename base_type, typename target_type{template_code}{template_code_r}> 
-{inline_marco} target_type operator {op} (Swizzle{dimension}<has_assign, base_type, target_type{assign_code}>& lsh, const Swizzle{dimension}<has_assign, base_type, target_type{assign_code_r}>& rsh) noexcept 
+{inline_marco} Swizzle{dimension}<true, base_type, target_type{assign_code}>& operator {op} (Swizzle{dimension}<true, base_type, target_type{assign_code}>& lsh, const Swizzle{dimension}<has_assign, base_type, target_type{assign_code_r}>& rsh) noexcept 
 {{ 
     base_type* pLsh = reinterpret_cast<base_type*>(&lsh);
     const base_type* pRsh = reinterpret_cast<const base_type*>(&rsh);

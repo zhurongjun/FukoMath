@@ -18,13 +18,13 @@ struct Swizzle1<true, base_type, target_type, x>
 		base_type pad[] = {{ self[x] }};
 		return *reinterpret_cast<target_type*>(pad);
 	}}
-
-	{inline_marco} target_type operator=(target_type rhs) noexcept
+	
+	{inline_marco} this_type& operator=(target_type rhs) noexcept
 	{{
 		base_type* self = reinterpret_cast<base_type*>(this);
 		base_type* prhs = reinterpret_cast<base_type*>(&rhs);
 		self[x] = prhs[0];
-		return *reinterpret_cast<target_type*>(this);
+		return *this;
 	}}
 
 	{inline_marco} this_type& operator++()
@@ -110,14 +110,22 @@ struct Swizzle2<true, base_type, target_type, x, y>
 		base_type pad[] = {{ self[x], self[y] }};
 		return *reinterpret_cast<target_type*>(pad);
 	}}
-
-	{inline_marco} target_type operator=(target_type rhs) noexcept
+	
+	{inline_marco} this_type& operator=(base_type rhs) noexcept
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		self[x] = rhs;
+		self[y] = rhs;
+		return *this;
+	}}
+	
+	{inline_marco} this_type& operator=(target_type rhs) noexcept
 	{{
 		base_type* self = reinterpret_cast<base_type*>(this);
 		base_type* prhs = reinterpret_cast<base_type*>(&rhs);
 		self[x] = prhs[0];
-		self[y] = prhs[1];
-		return *reinterpret_cast<target_type*>(this);
+		self[y] = prhs[0];
+		return *this;
 	}}
 
 	{inline_marco} this_type& operator++()
@@ -208,16 +216,25 @@ struct Swizzle3<true, base_type, target_type, x, y, z>
 		return *reinterpret_cast<target_type*>(pad);
 	}}
 
-	{inline_marco} target_type operator=(target_type rhs) noexcept
+	{inline_marco} this_type& operator=(base_type rhs) noexcept
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		self[x] = rhs;
+		self[y] = rhs;
+		self[z] = rhs;
+		return *this;
+	}}
+	
+	{inline_marco} this_type& operator=(target_type rhs) noexcept
 	{{
 		base_type* self = reinterpret_cast<base_type*>(this);
 		base_type* prhs = reinterpret_cast<base_type*>(&rhs);
 		self[x] = prhs[0];
-		self[y] = prhs[1];
-		self[z] = prhs[2];
-		return *reinterpret_cast<target_type*>(this);
+		self[y] = prhs[0];
+		self[z] = prhs[0];
+		return *this;
 	}}
-
+	
 	{inline_marco} this_type& operator++()
 	{{
 		base_type* self = reinterpret_cast<base_type*>(this);
@@ -310,15 +327,25 @@ struct Swizzle4<true, base_type, target_type, x, y, z, w>
 		return *reinterpret_cast<target_type*>(pad);
 	}}
 
-	{inline_marco} target_type operator=(target_type rhs) noexcept
+	{inline_marco} this_type& operator=(base_type rhs) noexcept
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		self[x] = rhs;
+		self[y] = rhs;
+		self[z] = rhs;
+		self[w] = rhs;
+		return *this;
+	}}
+	
+	{inline_marco} this_type& operator=(target_type rhs) noexcept
 	{{
 		base_type* self = reinterpret_cast<base_type*>(this);
 		base_type* prhs = reinterpret_cast<base_type*>(&rhs);
 		self[x] = prhs[0];
-		self[y] = prhs[1];
-		self[z] = prhs[2];
-		self[w] = prhs[3];
-		return *reinterpret_cast<target_type*>(this);
+		self[y] = prhs[0];
+		self[z] = prhs[0];
+		self[w] = prhs[0];
+		return *this;
 	}}
 
 	{inline_marco} this_type& operator++()

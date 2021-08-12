@@ -96,6 +96,11 @@ def gen_type_code_vector(base_type_name:str, implicit_convert_types:List[str] = 
             , dimension = i
             , inline_marco = config.inline_marco)
 
+        # gen swizzle convert constructor 
+        result += "\n\t// swizzle convert constructor\n"
+#        result += '''\ttemplate<>
+#\t{inline_marco} {base_type}{dimension}'''
+
         # gen access operator 
         result += "\n\t// access operator"
         result += str.format('''

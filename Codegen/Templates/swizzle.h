@@ -260,7 +260,7 @@ struct Swizzle4<true, base_type, target_type, x, y, z, w>
 	{inline_marco} target_type operator++(int)
 	{{
 		base_type* self = reinterpret_cast<base_type*>(this);
-		base_type pad[] = {{ self[x], self[y], self[z] }};
+		base_type pad[] = {{ self[x], self[y], self[z], self[w] }};
 		++self[x];
 		++self[y];
 		++self[z];
@@ -271,7 +271,7 @@ struct Swizzle4<true, base_type, target_type, x, y, z, w>
 	{inline_marco} target_type operator--(int)
 	{{
 		base_type* self = reinterpret_cast<base_type*>(this);
-		base_type pad[] = {{ self[x], self[y], self[z] }};
+		base_type pad[] = {{ self[x], self[y], self[z], self[w] }};
 		--self[x];
 		--self[y];
 		--self[z];

@@ -38,7 +38,7 @@ def gen_vector_test(type_list:List[str]) -> str:
                     if has_assign:
                         result += "\t\tva{dimension}.{swizzle_code} = vb{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code)
                         result += "\t\tva{dimension}.{swizzle_code} = vb1;\n".format(dimension = dimension, swizzle_code = swizzle_code)
-                        if type in config.all_num_types and False:
+                        if type in config.all_num_types and target_dimension:
                             for op in ["+", "-", "*", "/", "%"]:
                                 result += "\t\tva{dimension}.{swizzle_code} {op} vb{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op)
                                 result += "\t\tva{dimension}.{swizzle_code} {op} vb1;\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op)

@@ -18,5 +18,7 @@
         "swizzle4x2": "cpp",
         "swizzle4x3": "cpp",
         "swizzle4x4": "cpp",
+        "cmath": "cpp",
+        "xtr1common": "cpp"
     }
 }

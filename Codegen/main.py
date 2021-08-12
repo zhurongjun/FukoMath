@@ -61,7 +61,13 @@ if __name__ == "__main__" :
     # copy swizzle.h 
     swizzle_template_path = codgen_root_dir / config.swizzle_template_path
     if swizzle_template_path.exists():
-        shutil.copyfile(str(swizzle_template_path), str(swizzle_dir / "swizzle.h"))
+        swizzle_template : str
+        with swizzle_template_path.open() as f:
+            swizzle_template = f.read()
+        with (swizzle_dir / "swizzle.h").open("w+") as f:
+            f.write(swizzle_template.format(
+                inline_marco = config.inline_marco
+                , math_namespace = config.math_namespace))
     else:
         print("lost swizzle template file\n")
         exit()
@@ -160,7 +166,10 @@ if __name__ == "__main__" :
             
             # write 
             with deferred_file_path.open("w+") as f:
-                pass
+                f.write(deferred_template.format(
+                    inline_marco = config.inline_marco
+                    , math_namespace = config.math_namespace
+                ))
     else:
         print("lost deferred template file\n")
         exit()
@@ -249,18 +258,15 @@ if __name__ == "__main__" :
     test_exec_path = test_root_dir / "main.cpp"
     with test_vector_path.open("w+") as f:
         f.write('''#pragma once
-#include "fuko_math.h"
-''')
+#include "fuko_math.h"\n\n''')
         f.write(gen_test.gen_vector_test(config.vector_type_list))
     with test_matrix_path.open("w+") as f:
         f.write('''#pragma once
-#include "fuko_math.h"
-''')
+#include "fuko_math.h"\n\n''')
         f.write(gen_test.gen_matrix_test(config.matrix_type_list))
     with test_math_path.open("w+") as f:
         f.write('''#pragma once
-#include "fuko_math.h"
-''')
+#include "fuko_math.h"\n\n''')
         f.write(gen_test.gen_math_test(full_type_list))
     with test_exec_path.open("w+") as f:
         f.write(gen_test.gen_exec_test())

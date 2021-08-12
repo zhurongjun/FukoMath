@@ -1,20 +1,21 @@
 #pragma once
 #include "../fuko_math_forward.h"
 #include <stdint.h>
-#include <type_traits>
-template<bool enable_assignment, typename base_type, typename target_type, uint32_t... sequence>
-struct Swizzle;
+template<bool enable_assignment, typename base_type, typename target_type, uint32_t x> struct Swizzle1;
+template<bool enable_assignment, typename base_type, typename target_type, uint32_t x, uint32_t y> struct Swizzle2;
+template<bool enable_assignment, typename base_type, typename target_type, uint32_t x, uint32_t y, uint32_t z> struct Swizzle3;
+template<bool enable_assignment, typename base_type, typename target_type, uint32_t x, uint32_t y, uint32_t z, uint32_t w> struct Swizzle4;
 
-// swizzle with assign  
-template<typename base_type, typename target_type, uint32_t... sequence>
-struct Swizzle<true, base_type, target_type, sequence...>
+// swizzle1 with assign  
+template<typename base_type, typename target_type, uint32_t x>
+struct Swizzle1<true, base_type, target_type, x>
 {{
-	using this_type = Swizzle < true, base_type, target_type, sequence...>;
+	using this_type = Swizzle1<true, base_type, target_type, x>;
 
 	{inline_marco} operator target_type() const noexcept
 	{{
 		const base_type* self = reinterpret_cast<const base_type*>(this);
-		base_type pad[sizeof...(sequence)] = {{ self[sequence]... }};
+		base_type pad[] = {{ self[x] }};
 		return *reinterpret_cast<target_type*>(pad);
 	}}
 
@@ -22,79 +23,271 @@ struct Swizzle<true, base_type, target_type, sequence...>
 	{{
 		base_type* self = reinterpret_cast<base_type*>(this);
 		base_type* prhs = reinterpret_cast<base_type*>(&rhs);
-
-		assign(self, prhs, std::make_index_sequence<sizeof...(sequence)>());
-
+		self[x] = prhs[0];
 		return *reinterpret_cast<target_type*>(this);
 	}}
 
 	{inline_marco} this_type& operator++()
 	{{
-		increment(reinterpret_cast<base_type*>(this));
+		base_type* self = reinterpret_cast<base_type*>(this);
+		++self[x];
 		return *this;
 	}}
 
 	{inline_marco} this_type& operator--()
 	{{
-		decrement(reinterpret_cast<base_type*>(this));
+		base_type* self = reinterpret_cast<base_type*>(this);
+		--self[x];
 		return *this;
 	}}
 
 	{inline_marco} target_type operator++(int)
 	{{
-		const base_type* self = reinterpret_cast<const base_type*>(this);
-		base_type pad[sizeof...(sequence)] = {{ self[sequence]... }};
-		target_type old_val = *reinterpret_cast<target_type*>(pad);
-		increment(reinterpret_cast<base_type*>(this));
-		return old_val;
+		base_type* self = reinterpret_cast<base_type*>(this);
+		base_type pad[] = {{ self[x] }};
+		++self[x];
+		return *reinterpret_cast<target_type*>(pad);
 	}}
 
 	{inline_marco} target_type operator--(int)
 	{{
-		const base_type* self = reinterpret_cast<const base_type*>(this);
-		base_type pad[sizeof...(sequence)] = {{ self[sequence]... }};
-		target_type old_val = *reinterpret_cast<target_type*>(pad);
-		decrement(reinterpret_cast<base_type*>(this));
-		return old_val;
-	}}
-
-private:
-	template<size_t... indices>
-	{inline_marco} static void assign(base_type* self, base_type* rhs, std::index_sequence<indices...> seq) noexcept
-	{{
-		base_type tmp[] = {{ self[sequence] = rhs[indices]... }};
-	}}
-
-	template<size_t... indices>
-	{inline_marco} static void increment(base_type* self) noexcept
-	{{
-		base_type tmp[] = {{ ++self[sequence]... }};
-	}}
-
-	template<size_t... indices>
-	{inline_marco} static void decrement(base_type* self) noexcept
-	{{
-		base_type tmp[] = {{ --self[sequence]... }};
+		base_type* self = reinterpret_cast<base_type*>(this);
+		base_type pad[] = {{ self[x] }};
+		--self[x];
+		return *reinterpret_cast<target_type*>(pad);
 	}}
 }};
 
-// swizzle without assign 
-template<typename base_type, typename target_type, uint32_t... sequence>
-struct Swizzle<false, base_type, target_type, sequence...>
+// swizzle1 without assign 
+template<typename base_type, typename target_type, uint32_t x>
+struct Swizzle1<false, base_type, target_type, x>
 {{
-	using this_type = Swizzle < true, base_type, target_type, sequence...>;
+	{inline_marco} operator target_type() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+}};
+
+// swizzle2 with assign  
+template<typename base_type, typename target_type, uint32_t x, uint32_t y>
+struct Swizzle2<true, base_type, target_type, x, y>
+{{
+	using this_type = Swizzle2<true, base_type, target_type, x, y>;
 
 	{inline_marco} operator target_type() const noexcept
 	{{
 		const base_type* self = reinterpret_cast<const base_type*>(this);
-		base_type pad[sizeof...(sequence)] = {{ self[sequence]... }};
+		base_type pad[] = {{ self[x], self[y] }};
 		return *reinterpret_cast<target_type*>(pad);
 	}}
 
-private:
-	template<size_t... indices>
-	{inline_marco} static void assign(base_type* self, base_type* rhs, std::index_sequence<indices...> seq) noexcept
+	{inline_marco} target_type operator=(target_type rhs) noexcept
 	{{
-		base_type tmp[] = {{ self[sequence] = rhs[indices]... }};
+		base_type* self = reinterpret_cast<base_type*>(this);
+		base_type* prhs = reinterpret_cast<base_type*>(&rhs);
+		self[x] = prhs[0];
+		self[y] = prhs[1];
+		return *reinterpret_cast<target_type*>(this);
+	}}
+
+	{inline_marco} this_type& operator++()
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		++self[x];
+		++self[y];
+		return *this;
+	}}
+
+	{inline_marco} this_type& operator--()
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		--self[x];
+		--self[y];
+		return *this;
+	}}
+
+	{inline_marco} target_type operator++(int)
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		base_type pad[] = {{ self[x], self[y] }};
+		++self[x];
+		++self[y];
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator--(int)
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		base_type pad[] = {{ self[x], self[y] }};
+		--self[x];
+		--self[y];
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+}};
+
+// swizzle2 without assign 
+template<typename base_type, typename target_type, uint32_t x, uint32_t y>
+struct Swizzle2<false, base_type, target_type, x, y>
+{{
+	{inline_marco} operator target_type() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x], self[y] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+}};
+
+// swizzle3 with assign  
+template<typename base_type, typename target_type, uint32_t x, uint32_t y, uint32_t z>
+struct Swizzle3<true, base_type, target_type, x, y, z>
+{{
+	using this_type = Swizzle3<true, base_type, target_type, x, y, z>;
+
+	{inline_marco} operator target_type() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x], self[y], self[z] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator=(target_type rhs) noexcept
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		base_type* prhs = reinterpret_cast<base_type*>(&rhs);
+		self[x] = prhs[0];
+		self[y] = prhs[1];
+		self[z] = prhs[2];
+		return *reinterpret_cast<target_type*>(this);
+	}}
+
+	{inline_marco} this_type& operator++()
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		++self[x];
+		++self[y];
+		++self[z];
+		return *this;
+	}}
+
+	{inline_marco} this_type& operator--()
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		--self[x];
+		--self[y];
+		--self[z];
+		return *this;
+	}}
+
+	{inline_marco} target_type operator++(int)
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		base_type pad[] = {{ self[x], self[y], self[z] }};
+		++self[x];
+		++self[y];
+		++self[z];
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator--(int)
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		base_type pad[] = {{ self[x], self[y], self[z] }};
+		--self[x];
+		--self[y];
+		--self[z];
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+}};
+
+// swizzle3 without assign 
+template<typename base_type, typename target_type, uint32_t x, uint32_t y, uint32_t z>
+struct Swizzle3<false, base_type, target_type, x, y, z>
+{{
+	{inline_marco} operator target_type() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x], self[y], self[z] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+}};
+
+// swizzle4 with assign  
+template<typename base_type, typename target_type, uint32_t x, uint32_t y, uint32_t z, uint32_t w>
+struct Swizzle4<true, base_type, target_type, x, y, z, w>
+{{
+	using this_type = Swizzle4<true, base_type, target_type, x, y, z, w>;
+
+	{inline_marco} operator target_type() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x], self[y], self[z], self[w] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator=(target_type rhs) noexcept
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		base_type* prhs = reinterpret_cast<base_type*>(&rhs);
+		self[x] = prhs[0];
+		self[y] = prhs[1];
+		self[z] = prhs[2];
+		self[w] = prhs[3];
+		return *reinterpret_cast<target_type*>(this);
+	}}
+
+	{inline_marco} this_type& operator++()
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		++self[x];
+		++self[y];
+		++self[z];
+		++self[w];
+		return *this;
+	}}
+
+	{inline_marco} this_type& operator--()
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		--self[x];
+		--self[y];
+		--self[z];
+		--self[w];
+		return *this;
+	}}
+
+	{inline_marco} target_type operator++(int)
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		base_type pad[] = {{ self[x], self[y], self[z] }};
+		++self[x];
+		++self[y];
+		++self[z];
+		++self[w];
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator--(int)
+	{{
+		base_type* self = reinterpret_cast<base_type*>(this);
+		base_type pad[] = {{ self[x], self[y], self[z] }};
+		--self[x];
+		--self[y];
+		--self[z];
+		--self[w];
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+}};
+
+// swizzle4 without assign 
+template<typename base_type, typename target_type, uint32_t x, uint32_t y, uint32_t z, uint32_t w>
+struct Swizzle4<false, base_type, target_type, x, y, z, w>
+{{
+	{inline_marco} operator target_type() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x], self[y], self[z], self[w] }};
+		return *reinterpret_cast<target_type*>(pad);
 	}}
 }};

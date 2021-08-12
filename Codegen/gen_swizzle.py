@@ -36,7 +36,7 @@ def recursive_gen_components(len:int, case_count:int, comp:List[int], all_cases:
 # gen code for single swizzle case 
 def gen_swizzle_case_code(cur_case:case_info, swizzle_pad:list) -> str:
     # basic template str 
-    template_str = "Swizzle<{has_assign}, {type_marco}, "
+    template_str = "Swizzle{case_count}<{has_assign}, {type_marco}, "
 
     # out type 
     template_str += "{combine_marco}({type_marco}, {case_count})" if len(cur_case.components) > 1 else "{type_marco}"

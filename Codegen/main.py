@@ -1,3 +1,4 @@
+import gen_test
 from types import FunctionType
 from typing import List
 import gen_swizzle
@@ -14,9 +15,12 @@ from pathlib import Path
 codgen_root_dir = Path(__file__).parent
 project_root_dir = codgen_root_dir.parent
 cpp_root_dir = project_root_dir / "FukoMath"
+test_root_dir = project_root_dir / "FukoTest"
 swizzle_dir =   cpp_root_dir / "Swizzle"
 types_dir =     cpp_root_dir / "Types"
 math_dir =      cpp_root_dir / "Math"
+
+# file paths 
 make_script_path = project_root_dir / "premake.lua"
 forward_file_path = cpp_root_dir / "fuko_math_forward.h"
 deferred_file_path = cpp_root_dir / "fuko_math_deferred.h"
@@ -36,6 +40,8 @@ if __name__ == "__main__" :
     # clean up dir 
     if cpp_root_dir.exists():
         shutil.rmtree(cpp_root_dir)
+    if test_root_dir.exists():
+        shutil.rmtree(test_root_dir)
     if make_script_path.exists():
         make_script_path.unlink()
 
@@ -50,6 +56,7 @@ if __name__ == "__main__" :
     swizzle_dir.mkdir(parents=True)
     types_dir.mkdir(parents=True)
     math_dir.mkdir(parents=True)
+    test_root_dir.mkdir(parents=True)
 
     # copy swizzle.h 
     swizzle_template_path = codgen_root_dir / config.swizzle_template_path
@@ -234,6 +241,29 @@ if __name__ == "__main__" :
     else:
         print("lost facade file template file\n")
         exit()
+
+    # gen testscript 
+    test_vector_path = test_root_dir / "test_vector.h"
+    test_matrix_path = test_root_dir / "test_matrix.h"
+    test_math_path = test_root_dir / "test_math.h"
+    test_exec_path = test_root_dir / "main.cpp"
+    with test_vector_path.open("w+") as f:
+        f.write('''#pragma once
+#include "fuko_math.h"
+''')
+        f.write(gen_test.gen_vector_test(config.vector_type_list))
+    with test_matrix_path.open("w+") as f:
+        f.write('''#pragma once
+#include "fuko_math.h"
+''')
+        f.write(gen_test.gen_matrix_test(config.matrix_type_list))
+    with test_math_path.open("w+") as f:
+        f.write('''#pragma once
+#include "fuko_math.h"
+''')
+        f.write(gen_test.gen_math_test(full_type_list))
+    with test_exec_path.open("w+") as f:
+        f.write(gen_test.gen_exec_test())
 
     # gen makescript 
     make_script_template_path = codgen_root_dir / config.make_script_template_path

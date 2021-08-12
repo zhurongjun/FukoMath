@@ -28,6 +28,7 @@ isWindowsBuild = not isMacBuild and not isLinuxBuild
 
 -- paths 
 fuko_math_lib_path = "FukoMath"
+fuko_math_test_path = "FukoTest"
 
 workspace("fuko_math")
     configurations { "Debug", "Release" }
@@ -96,7 +97,7 @@ workspace("fuko_math")
 		end
 		
 		--setup startup project 
-		startproject("fuko_math")
+		startproject("test_math")
 		
 		filter { "platforms:"..PlatformMSVC64AVX2 }
 			toolset("msc")
@@ -172,4 +173,13 @@ project ("fuko_math")
 		fuko_math_lib_path.."/**.h",
 		-- TODO. natvis 
 		-- fuko_math_lib_path.."/*.natvis"
+	}
+
+project ("test_math")
+	kind("ConsoleApp")
+	language("c++")
+	files
+	{
+		fuko_math_test_path.."/**.h",
+		fuko_math_test_path.."/**.cpp",
 	}

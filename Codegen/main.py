@@ -197,6 +197,12 @@ if __name__ == "__main__" :
         # arithmetic assign 
         f.write(gen_math.gen_vector_arithmetic_assign(config.arithmetic_type_list))
 
+        # swizzle arithmetic 
+        f.write(gen_math.gen_swizzle_arithmetic())
+
+        # swizzle arithmetic assign 
+        f.write(gen_math.gen_swizzle_arithmetic_assign())
+
         # end namespace 
         if config.enable_namespace:
             f.write(end_namespace())

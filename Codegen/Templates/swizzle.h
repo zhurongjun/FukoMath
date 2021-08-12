@@ -56,6 +56,20 @@ struct Swizzle1<true, base_type, target_type, x>
 		--self[x];
 		return *reinterpret_cast<target_type*>(pad);
 	}}
+	
+	{inline_marco} target_type operator+() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator-() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ -self[x] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
 }};
 
 // swizzle1 without assign 
@@ -66,6 +80,20 @@ struct Swizzle1<false, base_type, target_type, x>
 	{{
 		const base_type* self = reinterpret_cast<const base_type*>(this);
 		base_type pad[] = {{ self[x] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+	
+	{inline_marco} target_type operator+() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator-() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ -self[x] }};
 		return *reinterpret_cast<target_type*>(pad);
 	}}
 }};
@@ -125,6 +153,20 @@ struct Swizzle2<true, base_type, target_type, x, y>
 		--self[y];
 		return *reinterpret_cast<target_type*>(pad);
 	}}
+	
+	{inline_marco} target_type operator+() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x], self[y] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator-() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ -self[x], -self[y] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
 }};
 
 // swizzle2 without assign 
@@ -135,6 +177,20 @@ struct Swizzle2<false, base_type, target_type, x, y>
 	{{
 		const base_type* self = reinterpret_cast<const base_type*>(this);
 		base_type pad[] = {{ self[x], self[y] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+	
+	{inline_marco} target_type operator+() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x], self[y] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator-() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ -self[x], -self[y] }};
 		return *reinterpret_cast<target_type*>(pad);
 	}}
 }};
@@ -199,6 +255,20 @@ struct Swizzle3<true, base_type, target_type, x, y, z>
 		--self[z];
 		return *reinterpret_cast<target_type*>(pad);
 	}}
+	
+	{inline_marco} target_type operator+() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x], self[y], self[z] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator-() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ -self[x], -self[y], -self[z] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
 }};
 
 // swizzle3 without assign 
@@ -209,6 +279,20 @@ struct Swizzle3<false, base_type, target_type, x, y, z>
 	{{
 		const base_type* self = reinterpret_cast<const base_type*>(this);
 		base_type pad[] = {{ self[x], self[y], self[z] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+	
+	{inline_marco} target_type operator+() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x], self[y], self[z] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator-() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ -self[x], -self[y], -self[z] }};
 		return *reinterpret_cast<target_type*>(pad);
 	}}
 }};
@@ -278,6 +362,20 @@ struct Swizzle4<true, base_type, target_type, x, y, z, w>
 		--self[w];
 		return *reinterpret_cast<target_type*>(pad);
 	}}
+	
+	{inline_marco} target_type operator+() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x], self[y], self[z], self[w] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator-() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ -self[x], -self[y], -self[z], -self[w] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
 }};
 
 // swizzle4 without assign 
@@ -288,6 +386,20 @@ struct Swizzle4<false, base_type, target_type, x, y, z, w>
 	{{
 		const base_type* self = reinterpret_cast<const base_type*>(this);
 		base_type pad[] = {{ self[x], self[y], self[z], self[w] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator+() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ self[x], self[y], self[z], self[w] }};
+		return *reinterpret_cast<target_type*>(pad);
+	}}
+
+	{inline_marco} target_type operator-() const noexcept
+	{{
+		const base_type* self = reinterpret_cast<const base_type*>(this);
+		base_type pad[] = {{ -self[x], -self[y], -self[z], -self[w] }};
 		return *reinterpret_cast<target_type*>(pad);
 	}}
 }};

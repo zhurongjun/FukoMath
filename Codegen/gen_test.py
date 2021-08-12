@@ -14,7 +14,7 @@ def gen_vector_test(type_list:List[str]) -> str:
 
         # basic var 
         for dimension in range(1, 5):
-            result += "\t\t{base_type}{type_dimension} va{dimension} = 0, vb{dimension} = 0;\n".format(
+            result += "\t\t{base_type}{type_dimension} va{dimension} = 1, vb{dimension} = 2;\n".format(
                 base_type = type
                 , type_dimension = "" if dimension == 1 else dimension
                 , dimension = dimension
@@ -38,10 +38,18 @@ def gen_vector_test(type_list:List[str]) -> str:
                     if has_assign:
                         result += "\t\tva{dimension}.{swizzle_code} = vb{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code)
                         result += "\t\tva{dimension}.{swizzle_code} = vb1;\n".format(dimension = dimension, swizzle_code = swizzle_code)
-                        if type in config.all_num_types and target_dimension:
+                        if type in config.all_num_types:
                             for op in ["+", "-", "*", "/", "%"]:
                                 result += "\t\tva{dimension}.{swizzle_code} {op} vb{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op)
                                 result += "\t\tva{dimension}.{swizzle_code} {op} vb1;\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op)
+
+                            for op in ["+", "-"]:
+                                result += "\t\t{op}vb{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op)
+                                
+                            if target_dimension <= 2:
+                                for op in ["+=", "-=", "*=", "/=", "%="]:
+                                    result += "\t\tva{dimension}.{swizzle_code} {op} vb{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op)
+                                    result += "\t\tva{dimension}.{swizzle_code} {op} vb1;\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op)
                     else:
                         result += "\t\tva{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code)
 

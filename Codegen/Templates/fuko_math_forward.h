@@ -43,6 +43,19 @@ FORCEINLINE T _floating_mod(T a, T b)
 	return a < 0 ? -c : c;
 }}
 
+template<typename T>
+FORCEINLINE T _mod(T a, T b)
+{{
+	if constexpr (std::is_same_v<T, float> || std::is_same_v<T, double>)
+	{{
+		return _floating_mod(a, b);
+	}}
+	else
+	{{
+		return a % b;
+	}}
+}}
+
 // forward declares 
 {forward_declares}
 }}

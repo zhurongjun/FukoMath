@@ -184,7 +184,11 @@ project ("fuko_math")
 project ("test_math")
 	kind("ConsoleApp")
 	language("c++")
-	buildoptions{ "/bigobj" }
+	if(isMacBuild) then
+	elseif(isLinuxBuild) then
+	else
+		buildoptions{ "/bigobj" }
+	end
 	files
 	{
 		fuko_math_test_path.."/**.h",

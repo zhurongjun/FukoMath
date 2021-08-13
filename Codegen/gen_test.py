@@ -53,14 +53,14 @@ def gen_vector_test(type_list:List[str]) -> str:
                     else:
                         
                         if type in config.all_num_types:
-                            '''
+                            
                             for op in ["+", "-", "*", "/", "%"]:
                                 result += "\t\tva{dimension}.{swizzle_code} {op} vb{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op, target_dimension = target_dimension)
                                 result += "\t\tva{dimension}.{swizzle_code} {op} vb1;\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op, target_dimension = target_dimension)
 
                             for op in ["+", "-"]:
                                 result += "\t\t{op}vb{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op, target_dimension = target_dimension)
-                            '''
+                            
                         result += "\t\tvb{target_dimension} = va{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code, target_dimension = target_dimension)
 
 
@@ -74,7 +74,7 @@ def gen_vector_test(type_list:List[str]) -> str:
 def gen_matrix_test(type_list:List[str]) -> str:
     result = ""
     # begin function 
-    result += "void test_matrix()\n{\n"
+    result += "void test_matrix()\n{{\n\tusing namespace {math_namespace};\n".format(math_namespace = config.math_namespace)
 
     # buidl test code 
     result += '''\n\tstd::cout << "test_matrix" << std::endl;'''
@@ -87,7 +87,7 @@ def gen_matrix_test(type_list:List[str]) -> str:
 def gen_math_test(type_list:List[str]) -> str:
     result = ""
     # begin function 
-    result += "void test_math()\n{\n"
+    result += "void test_math()\n{{\n\tusing namespace {math_namespace};\n".format(math_namespace = config.math_namespace)
 
     # buidl test code 
     result += '''\n\tstd::cout << "test_math" << std::endl;'''

@@ -79,8 +79,11 @@ def gen_type_code_vector(base_type_name:str, implicit_convert_types:List[str] = 
   
     # gen structures 
     for i in range(2, 5):
+        assign_code = ""
+        for comp in range(0, i):
+            assign_code += ", {comp}".format(comp = comp)
         # begin struct 
-        result += str.format("struct {base_type}{dimension}\n{{\n", base_type = base_type_name, dimension = i)
+        result += str.format("struct {base_type}{dimension} : Swizzle{dimension}<true, {base_type}, {base_type}{dimension}{assign_code}>\n{{\n", base_type = base_type_name, dimension = i, assign_code = assign_code)
         
         # gen constructor 
         result += "\t// constructor\n"
@@ -125,7 +128,10 @@ def gen_type_code_vector(base_type_name:str, implicit_convert_types:List[str] = 
     , type_marco = util.swizzle_type_marco)
 
         # end struct 
-        result += "};\n\n"
+        result += "};\n"
+
+        # is swizzle
+        result += "template<> struct is_swizzle<{base_type}{dimension}> {{ static constexpr bool value = true; }};\n\n".format(base_type = base_type_name, dimension = i)
 
     return result;
 

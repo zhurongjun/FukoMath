@@ -1,6 +1,9 @@
 #pragma once
 #include "../fuko_math_forward.h"
 #include <stdint.h>
+
+namespace {math_namespace}
+{{
 template<bool enable_assignment, typename base_type, typename target_type, uint32_t x> struct Swizzle1;
 template<bool enable_assignment, typename base_type, typename target_type, uint32_t x, uint32_t y> struct Swizzle2;
 template<bool enable_assignment, typename base_type, typename target_type, uint32_t x, uint32_t y, uint32_t z> struct Swizzle3;
@@ -430,3 +433,13 @@ struct Swizzle4<false, base_type, target_type, x, y, z, w>
 		return *reinterpret_cast<target_type*>(pad);
 	}}
 }};
+
+template<bool enable_assignment, typename base_type, typename target_type, uint32_t x>
+struct is_swizzle<Swizzle1<enable_assignment, base_type, target_type, x>> {{ static constexpr bool value = true; }};
+template<bool enable_assignment, typename base_type, typename target_type, uint32_t x, uint32_t y>
+struct is_swizzle<Swizzle2<enable_assignment, base_type, target_type, x, y>> {{ static constexpr bool value = true; }};
+template<bool enable_assignment, typename base_type, typename target_type, uint32_t x, uint32_t y, uint32_t z>
+struct is_swizzle<Swizzle3<enable_assignment, base_type, target_type, x, y, z>> {{ static constexpr bool value = true; }};
+template<bool enable_assignment, typename base_type, typename target_type, uint32_t x, uint32_t y, uint32_t z, uint32_t w>
+struct is_swizzle<Swizzle4<enable_assignment, base_type, target_type, x, y, z, w>> {{ static constexpr bool value = true; }};
+}}

@@ -56,6 +56,18 @@ FORCEINLINE T _mod(T a, T b)
 	}}
 }}
 
+template<typename T>
+struct is_swizzle;
+
+template<typename T>
+struct is_swizzle
+{{
+	static constexpr bool value = false;
+}};
+
+template<typename T>
+static constexpr bool is_swizzle_v = is_swizzle<T>::value;
+
 // forward declares 
 {forward_declares}
 }}

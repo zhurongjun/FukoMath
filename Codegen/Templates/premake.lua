@@ -184,6 +184,7 @@ project ("fuko_math")
 project ("test_math")
 	kind("ConsoleApp")
 	language("c++")
+	buildoptions{ "/bigobj" }
 	files
 	{
 		fuko_math_test_path.."/**.h",

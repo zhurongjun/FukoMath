@@ -93,7 +93,7 @@ workspace("fuko_math")
 		if (_ACTION == "vs2015") then
 			llvmToolset = "msc-llvm-vs2014";
 		else
-			llvmToolset = "msc-llvm";
+			llvmToolset = "clang";
 		end
 		
 		--setup startup project 
@@ -138,14 +138,14 @@ workspace("fuko_math")
 			toolset(llvmToolset)
 			architecture("x64")
 			vectorextensions("avx")
-			buildoptions { "-Wno-unused-variable -mavx", "/d1reportTimeSummary" }
+			buildoptions { "-Wno-unused-variable -mavx" }
 			
 		filter { "platforms:"..PlatformLLVM64SSE41 }
 			toolset(llvmToolset)
 			architecture("x64")
 			vectorextensions("sse4.1")
 			defines { "__SSE4_1__" }
-			buildoptions { "-Wno-unused-variable -msse4.1", "/d1reportTimeSummary" }
+			buildoptions { "-Wno-unused-variable -msse4.1" }
 			
 		filter { "platforms:"..PlatformLLVM64SSE2 }
 			toolset(llvmToolset)
@@ -154,7 +154,7 @@ workspace("fuko_math")
 			
 		filter { "platforms:"..PlatformLLVM32SSE2 }
 			toolset(llvmToolset)
-			buildoptions { "-Wno-unused-variable", "/d1reportTimeSummary" }
+			buildoptions { "-Wno-unused-variable" }
 
 		filter{}
 	end

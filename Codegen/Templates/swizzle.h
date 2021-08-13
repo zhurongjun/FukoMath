@@ -107,13 +107,6 @@ struct Swizzle2<true, base_type, target_type, x, y>
 {{
 	using this_type = Swizzle2<true, base_type, target_type, x, y>;
 
-	{inline_marco} operator target_type() const noexcept
-	{{
-		const base_type* self = reinterpret_cast<const base_type*>(this);
-		base_type pad[] = {{ self[x], self[y] }};
-		return *reinterpret_cast<target_type*>(pad);
-	}}
-	
 	{inline_marco} this_type& operator=(base_type rhs) noexcept
 	{{
 		base_type* self = reinterpret_cast<base_type*>(this);
@@ -184,13 +177,6 @@ struct Swizzle2<true, base_type, target_type, x, y>
 template<typename base_type, typename target_type, uint32_t x, uint32_t y>
 struct Swizzle2<false, base_type, target_type, x, y>
 {{
-	{inline_marco} operator target_type() const noexcept
-	{{
-		const base_type* self = reinterpret_cast<const base_type*>(this);
-		base_type pad[] = {{ self[x], self[y] }};
-		return *reinterpret_cast<target_type*>(pad);
-	}}
-	
 	{inline_marco} target_type operator+() const noexcept
 	{{
 		const base_type* self = reinterpret_cast<const base_type*>(this);
@@ -211,13 +197,6 @@ template<typename base_type, typename target_type, uint32_t x, uint32_t y, uint3
 struct Swizzle3<true, base_type, target_type, x, y, z>
 {{
 	using this_type = Swizzle3<true, base_type, target_type, x, y, z>;
-
-	{inline_marco} operator target_type() const noexcept
-	{{
-		const base_type* self = reinterpret_cast<const base_type*>(this);
-		base_type pad[] = {{ self[x], self[y], self[z] }};
-		return *reinterpret_cast<target_type*>(pad);
-	}}
 
 	{inline_marco} this_type& operator=(base_type rhs) noexcept
 	{{
@@ -295,13 +274,6 @@ struct Swizzle3<true, base_type, target_type, x, y, z>
 template<typename base_type, typename target_type, uint32_t x, uint32_t y, uint32_t z>
 struct Swizzle3<false, base_type, target_type, x, y, z>
 {{
-	{inline_marco} operator target_type() const noexcept
-	{{
-		const base_type* self = reinterpret_cast<const base_type*>(this);
-		base_type pad[] = {{ self[x], self[y], self[z] }};
-		return *reinterpret_cast<target_type*>(pad);
-	}}
-	
 	{inline_marco} target_type operator+() const noexcept
 	{{
 		const base_type* self = reinterpret_cast<const base_type*>(this);
@@ -322,13 +294,6 @@ template<typename base_type, typename target_type, uint32_t x, uint32_t y, uint3
 struct Swizzle4<true, base_type, target_type, x, y, z, w>
 {{
 	using this_type = Swizzle4<true, base_type, target_type, x, y, z, w>;
-
-	{inline_marco} operator target_type() const noexcept
-	{{
-		const base_type* self = reinterpret_cast<const base_type*>(this);
-		base_type pad[] = {{ self[x], self[y], self[z], self[w] }};
-		return *reinterpret_cast<target_type*>(pad);
-	}}
 
 	{inline_marco} this_type& operator=(base_type rhs) noexcept
 	{{
@@ -412,13 +377,6 @@ struct Swizzle4<true, base_type, target_type, x, y, z, w>
 template<typename base_type, typename target_type, uint32_t x, uint32_t y, uint32_t z, uint32_t w>
 struct Swizzle4<false, base_type, target_type, x, y, z, w>
 {{
-	{inline_marco} operator target_type() const noexcept
-	{{
-		const base_type* self = reinterpret_cast<const base_type*>(this);
-		base_type pad[] = {{ self[x], self[y], self[z], self[w] }};
-		return *reinterpret_cast<target_type*>(pad);
-	}}
-
 	{inline_marco} target_type operator+() const noexcept
 	{{
 		const base_type* self = reinterpret_cast<const base_type*>(this);

@@ -100,9 +100,49 @@ def gen_type_code_vector(base_type_name:str, implicit_convert_types:List[str] = 
             , inline_marco = config.inline_marco)
 
         # gen swizzle convert constructor 
+        template_code = ""
+        template_assign_code = ""
+        assign_code = ""
+        assign_code_constructor = ""
+        
+        for d in range(0, i):
+            template_code += ", uint32_t {comp}".format(comp = util.math_swizzle_pad[d])
+            template_assign_code += ", {comp}".format(comp = util.math_swizzle_pad[d])
+            assign_code += "\t\tpad[{d}] = pOther[{comp}];\n".format(d = d, comp = util.math_swizzle_pad[d])
+            assign_code_constructor += ", reinterpret_cast<const {base_type}*>(&other)[{d}]".format(d = d, base_type = base_type_name)
+        template_code = template_code[2:]
+        assign_code_constructor = assign_code_constructor[2:]
+
         result += "\n\t// swizzle convert constructor\n"
-#        result += '''\ttemplate<>
-#\t{inline_marco} {base_type}{dimension}'''
+        result += '''\ttemplate<bool enable_assign, {template_code}>
+\t{inline_marco} {base_type}{dimension}(const Swizzle{dimension}<enable_assign, {base_type}, {base_type}{dimension}{template_assign_code}>& other) : pad{{ {assign_code_constructor} }} {{ }}
+'''.format(
+            inline_marco = config.inline_marco
+            , base_type = base_type_name
+            , dimension = i
+            , template_code = template_code
+            , template_assign_code = template_assign_code
+            , assign_code_constructor = assign_code_constructor
+        )
+
+        # gen swizzle assign operator 
+        result += "\n\t// swizzle assign operator\n"
+        result += '''\ttemplate<bool enable_assign, {template_code}>
+\t{inline_marco} {base_type}{dimension}& operator = (const Swizzle{dimension}<enable_assign, {base_type}, {base_type}{dimension}{template_assign_code}>& other)
+\t{{
+\t\tconst {base_type}* pOther = reinterpret_cast<const {base_type}*>(&other);
+
+{assign_code}
+\t\treturn *this;
+\t}}
+'''.format(
+            inline_marco = config.inline_marco
+            , base_type = base_type_name
+            , dimension = i
+            , template_code = template_code
+            , template_assign_code = template_assign_code
+            , assign_code = assign_code
+        )
 
         # gen access operator 
         result += "\n\t// access operator"

@@ -51,7 +51,7 @@ def gen_vector_test(type_list:List[str]) -> str:
                                     result += "\t\tva{dimension}.{swizzle_code} {op} vb{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op)
                                     result += "\t\tva{dimension}.{swizzle_code} {op} vb1;\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op)
                     else:
-                        '''
+                        
                         if type in config.all_num_types:
                             for op in ["+", "-", "*", "/", "%"]:
                                 result += "\t\tva{dimension}.{swizzle_code} {op} vb{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op, target_dimension = target_dimension)
@@ -59,7 +59,6 @@ def gen_vector_test(type_list:List[str]) -> str:
 
                             for op in ["+", "-"]:
                                 result += "\t\t{op}vb{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code, op = op, target_dimension = target_dimension)
-                        '''
                         result += "\t\tvb{target_dimension} = va{dimension}.{swizzle_code};\n".format(dimension = dimension, swizzle_code = swizzle_code, target_dimension = target_dimension)
 
 

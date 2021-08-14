@@ -168,9 +168,9 @@ def gen_vector_arithmetic(type_list:List[str]) -> str:
 
             # gen op code 
             if type in config.floating_type_mod_list:
-                op_code = "_floating_mod(lsh{idx}, rsh{idx})".format(idx = "" if dimension == 1 else "[0]")
+                op_code = "_mod(lsh{idx}, rsh{idx})".format(idx = "" if dimension == 1 else "[0]")
                 for idx in range(1, dimension):
-                    op_code += str.format(", _floating_mod(lsh{idx}, rsh{idx})", idx = "" if dimension == 1 else "[{dimension}]".format(dimension = dimension))
+                    op_code += str.format(", _mod(lsh{idx}, rsh{idx})", idx = "" if dimension == 1 else "[{dimension}]".format(dimension = dimension))
             else:
                 op_code = str.format("lsh[0] {op} rsh[0]", op = "%")
                 for idx in range(1, dimension):

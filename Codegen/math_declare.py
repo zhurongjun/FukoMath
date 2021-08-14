@@ -328,7 +328,7 @@ class vector_declares:
               inline_marco = inline_marco
             , base_type = base_type
             , dimension = "" if dimension == 1 else dimension
-            , calc_code = "_floating_mod(x, y)" if dimension == 1 else "x % y"
+            , calc_code = "_mod(x, y)" if dimension == 1 else "x % y"
         )
 
     # frac	Returns the fractional part of x.	1¹

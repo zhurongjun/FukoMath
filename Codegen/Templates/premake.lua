@@ -167,7 +167,6 @@ workspace("fuko_math")
 	
 	configuration "Release"
 		defines { "NDEBUG" }
-		optimize "on"
 		inlining("auto")
 		optimize("speed")
 

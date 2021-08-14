@@ -15,8 +15,8 @@ swizzle_op_swizzle_template = '''template<bool has_assign_l, bool has_assign_r, 
     return {return_type}({op_code}); 
 }}\n'''
 
-swizzle_op_scalar_template = '''template<bool has_assign_l, typename base_type_l, typename base_type_r, typename target_type_l{template_code_l}> 
-{inline_marco} std::enable_if_t<!is_swizzle_v<std::remove_cv_t<base_type_r>>, {return_type}> operator {op} (
+swizzle_op_scalar_template = '''template<bool has_assign_l, typename base_type_l, typename base_type_r, typename target_type_l{template_code_l}, typename = std::enable_if_t<!is_swizzle_v<std::remove_cv_t<base_type_r>>, void>> 
+{inline_marco} {return_type} operator {op} (
       const Swizzle{dimension}<has_assign_l, base_type_l, target_type_l{assign_code_l}>& lhs
     , const base_type_r rhs) noexcept 
 {{ 
@@ -25,8 +25,8 @@ swizzle_op_scalar_template = '''template<bool has_assign_l, typename base_type_l
     return {return_type}({op_code}); 
 }}\n'''
 
-scalar_op_swizzle_template = '''template<bool has_assign_r, typename base_type_l, typename base_type_r, typename target_type_r{template_code_r}> 
-{inline_marco} std::enable_if_t<!is_swizzle_v<std::remove_cv_t<base_type_l>>, {return_type}> operator {op} (
+scalar_op_swizzle_template = '''template<bool has_assign_r, typename base_type_l, typename base_type_r, typename target_type_r{template_code_r}, typename = std::enable_if_t<!is_swizzle_v<std::remove_cv_t<base_type_l>>, void>> 
+{inline_marco} {return_type} operator {op} (
       const base_type_l lhs
     , const Swizzle{dimension}<has_assign_r, base_type_r, target_type_r{assign_code_r}>& rhs) noexcept 
 {{ 
@@ -46,26 +46,26 @@ swizzle_op_swizzle_assign_template = '''template<bool has_assign_l, bool has_ass
 
     base_type_l pad[] = {{ {op_code} }};
     
-    {assign_op_code}
+{assign_op_code}
     return lhs; 
 }}\n'''
 
-swizzle_op_scalar_assign_template = '''template<bool has_assign_l, typename base_type_l, typename base_type_r, typename target_type_l{template_code_l}> 
+swizzle_op_scalar_assign_template = '''template<bool has_assign_l, typename base_type_l, typename base_type_r, typename target_type_l{template_code_l}, typename = std::enable_if_t<!is_swizzle_v<std::remove_cv_t<base_type_r>>, void>> 
 {inline_marco} Swizzle{dimension}<has_assign_l, base_type_l, target_type_l{assign_code_l}>& operator {op}= (
       Swizzle{dimension}<has_assign_l, base_type_l, target_type_l{assign_code_l}>& lhs
     , const base_type_r rhs) noexcept 
 {{ 
     base_type_l* pLhs = reinterpret_cast<base_type_l*>(&lhs);
     
-    {assign_op_code}
+{assign_op_code}
     return lhs; 
 }}\n'''
 
 util_op_template = ", {lhs} {op} {rhs}"
 mod_op_template = ", _mod({lhs}, {rhs})"
-util_assign_op_template = "{lhs} = {pad};\n"
-util_assign_op_s_template = "{lhs} = {lhs} {op} {rhs};\n"
-util_mod_assign_op_s_template = "{lhs} = _mod({lhs}, {rhs});\n"
+util_assign_op_template = "\t\t{lhs} = {pad};\n"
+util_assign_op_s_template = "\t\t{lhs} = {lhs} {op} {rhs};\n"
+util_mod_assign_op_s_template = "\t\t{lhs} = _mod({lhs}, {rhs});\n"
 
 def gen_swizzle_op(template:str, dimension:int, op_template:str, op:str, return_type:str, swizzle_l:bool, swizzle_r:bool, assign_op_template:str = "") -> str:
     template_code_l = ""
@@ -82,12 +82,12 @@ def gen_swizzle_op(template:str, dimension:int, op_template:str, op:str, return_
         assign_code_l += ", {comp}_l".format(comp = util.math_swizzle_pad[d])
         assign_code_r += ", {comp}_r".format(comp = util.math_swizzle_pad[d])
         op_code += op_template.format(
-            lhs = "pLhs[{d}]".format(d = d) if swizzle_l else "lhs"
-            , rhs = "pRhs[{d}]".format(d = d) if swizzle_r else "rhs"
+            lhs = "pLhs[{d}_l]".format(d = util.math_swizzle_pad[d]) if swizzle_l else "lhs"
+            , rhs = "pRhs[{d}_r]".format(d = util.math_swizzle_pad[d]) if swizzle_r else "rhs"
             , op = op)
         assign_op_code += assign_op_template.format(
-            lhs = "pLhs[{d}]".format(d = d) if swizzle_l else "lhs"
-            , rhs = "pRhs[{d}]".format(d = d) if swizzle_r else "rhs"
+            lhs = "pLhs[{d}_l]".format(d = util.math_swizzle_pad[d]) if swizzle_l else "lhs"
+            , rhs = "pRhs[{d}_r]".format(d = util.math_swizzle_pad[d]) if swizzle_r else "rhs"
             , pad = "pad[{d}]".format(d = d)
             , op = op)
     op_code = op_code[2:]

@@ -15,6 +15,26 @@ swizzle_op_swizzle_template = '''template<bool has_assign_l, bool has_assign_r, 
     return {return_type}({op_code}); 
 }}\n'''
 
+swizzle_op_swizzle1_template = '''template<bool has_assign_l, bool has_assign_r, typename base_type_l, typename base_type_r, typename target_type_l, typename target_type_r{template_code_l}, uint32_t x_r> 
+{inline_marco} {return_type} operator {op} (
+      const Swizzle{dimension}<has_assign_l, base_type_l, target_type_l{assign_code_l}>& lhs
+    , const Swizzle1<has_assign_r, base_type_r, target_type_r, x_r>& rhs) noexcept 
+{{ 
+    const base_type_l* pLhs = reinterpret_cast<const base_type_l*>(&lhs);
+
+    return {return_type}({op_code}); 
+}}\n'''
+
+swizzle1_op_swizzle_template = '''template<bool has_assign_l, bool has_assign_r, typename base_type_l, typename base_type_r, typename target_type_l, typename target_type_r{template_code_r}, uint32_t x_l> 
+{inline_marco} {return_type} operator {op} (
+      const Swizzle1<has_assign_l, base_type_l, target_type_l, x_l>& lhs
+    , const Swizzle{dimension}<has_assign_r, base_type_r, target_type_r{assign_code_r}>& rhs) noexcept 
+{{ 
+    const base_type_r* pRhs = reinterpret_cast<const base_type_r*>(&rhs);
+
+    return {return_type}({op_code}); 
+}}\n'''
+
 swizzle_op_scalar_template = '''template<bool has_assign_l, typename base_type_l, typename base_type_r, typename target_type_l{template_code_l}, typename = std::enable_if_t<!is_swizzle_v<std::remove_cv_t<base_type_r>>, void>> 
 {inline_marco} {return_type} operator {op} (
       const Swizzle{dimension}<has_assign_l, base_type_l, target_type_l{assign_code_l}>& lhs
@@ -50,6 +70,17 @@ swizzle_op_swizzle_assign_template = '''template<bool has_assign_l, bool has_ass
     return lhs; 
 }}\n'''
 
+swizzle_op_swizzle1_assign_template = '''template<bool has_assign_l, bool has_assign_r, typename base_type_l, typename base_type_r, typename target_type_l, typename target_type_r{template_code_l}, uint32_t x_r> 
+{inline_marco} Swizzle{dimension}<has_assign_l, base_type_l, target_type_l{assign_code_l}>& operator {op}= (
+      Swizzle{dimension}<has_assign_l, base_type_l, target_type_l{assign_code_l}>& lhs
+    , const Swizzle1<has_assign_r, base_type_r, target_type_r, x_r>& rhs) noexcept 
+{{ 
+    base_type_l* pLhs = reinterpret_cast<base_type_l*>(&lhs);
+    
+{assign_op_code}
+    return lhs; 
+}}\n'''
+
 swizzle_op_scalar_assign_template = '''template<bool has_assign_l, typename base_type_l, typename base_type_r, typename target_type_l{template_code_l}, typename = std::enable_if_t<!is_swizzle_v<std::remove_cv_t<base_type_r>>, void>> 
 {inline_marco} Swizzle{dimension}<has_assign_l, base_type_l, target_type_l{assign_code_l}>& operator {op}= (
       Swizzle{dimension}<has_assign_l, base_type_l, target_type_l{assign_code_l}>& lhs
@@ -63,9 +94,9 @@ swizzle_op_scalar_assign_template = '''template<bool has_assign_l, typename base
 
 util_op_template = ", {lhs} {op} {rhs}"
 mod_op_template = ", _mod({lhs}, {rhs})"
-util_assign_op_template = "\t\t{lhs} = {pad};\n"
-util_assign_op_s_template = "\t\t{lhs} = {lhs} {op} {rhs};\n"
-util_mod_assign_op_s_template = "\t\t{lhs} = _mod({lhs}, {rhs});\n"
+util_assign_op_template = "\t{lhs} = {pad};\n"
+util_assign_op_s_template = "\t{lhs} = {lhs} {op} {rhs};\n"
+util_mod_assign_op_s_template = "\t{lhs} = _mod({lhs}, {rhs});\n"
 
 def gen_swizzle_op(template:str, dimension:int, op_template:str, op:str, return_type:str, swizzle_l:bool, swizzle_r:bool, assign_op_template:str = "") -> str:
     template_code_l = ""
@@ -82,12 +113,12 @@ def gen_swizzle_op(template:str, dimension:int, op_template:str, op:str, return_
         assign_code_l += ", {comp}_l".format(comp = util.math_swizzle_pad[d])
         assign_code_r += ", {comp}_r".format(comp = util.math_swizzle_pad[d])
         op_code += op_template.format(
-            lhs = "pLhs[{d}_l]".format(d = util.math_swizzle_pad[d]) if swizzle_l else "lhs"
-            , rhs = "pRhs[{d}_r]".format(d = util.math_swizzle_pad[d]) if swizzle_r else "rhs"
+            lhs = "pLhs[{d}_l]".format(d = util.math_swizzle_pad[d]) if swizzle_l else "(base_type_r)lhs"
+            , rhs = "pRhs[{d}_r]".format(d = util.math_swizzle_pad[d]) if swizzle_r else "(base_type_l)rhs"
             , op = op)
         assign_op_code += assign_op_template.format(
-            lhs = "pLhs[{d}_l]".format(d = util.math_swizzle_pad[d]) if swizzle_l else "lhs"
-            , rhs = "pRhs[{d}_r]".format(d = util.math_swizzle_pad[d]) if swizzle_r else "rhs"
+            lhs = "pLhs[{d}_l]".format(d = util.math_swizzle_pad[d]) if swizzle_l else "(base_type_l)rhs"
+            , rhs = "pRhs[{d}_r]".format(d = util.math_swizzle_pad[d]) if swizzle_r else "(base_type_l)rhs"
             , pad = "pad[{d}]".format(d = d)
             , op = op)
     op_code = op_code[2:]
@@ -265,6 +296,9 @@ def gen_swizzle_arithmetic() -> str:
             result += gen_swizzle_op(swizzle_op_swizzle_template, dimension, util_op_template, op, "target_type_l", True, True)
             result += gen_swizzle_op(swizzle_op_scalar_template,  dimension, util_op_template, op, "target_type_l", True, False)
             result += gen_swizzle_op(scalar_op_swizzle_template,  dimension, util_op_template, op, "target_type_r", False, True)
+            if dimension != 1:
+                result += gen_swizzle_op(swizzle_op_swizzle1_template,  dimension, util_op_template, op, "target_type_l", True, False)
+                result += gen_swizzle_op(swizzle1_op_swizzle_template,  dimension, util_op_template, op, "target_type_r", False, True)
     
     # gen %
     for op in ["%"]:
@@ -272,6 +306,9 @@ def gen_swizzle_arithmetic() -> str:
             result += gen_swizzle_op(swizzle_op_swizzle_template, dimension, mod_op_template, op, "target_type_l", True, True)
             result += gen_swizzle_op(swizzle_op_scalar_template,  dimension, mod_op_template, op, "target_type_l", True, False)
             result += gen_swizzle_op(scalar_op_swizzle_template,  dimension, mod_op_template, op, "target_type_r", False, True)
+            if dimension != 1:
+                result += gen_swizzle_op(swizzle_op_swizzle1_template,  dimension, mod_op_template, op, "target_type_l", True, False)
+                result += gen_swizzle_op(swizzle1_op_swizzle_template,  dimension, mod_op_template, op, "target_type_r", False, True)
 
     # gen > < >= <= == !=
     for op in [">", "<", ">=", "<=", "==", "!="]:
@@ -279,6 +316,9 @@ def gen_swizzle_arithmetic() -> str:
             result += gen_swizzle_op(swizzle_op_swizzle_template, dimension, util_op_template, op, "bool{d}".format(d = "" if dimension == 1 else dimension), True, True)
             result += gen_swizzle_op(swizzle_op_scalar_template,  dimension, util_op_template, op, "bool{d}".format(d = "" if dimension == 1 else dimension), True, False)
             result += gen_swizzle_op(scalar_op_swizzle_template,  dimension, util_op_template, op, "bool{d}".format(d = "" if dimension == 1 else dimension), False, True)
+            if dimension != 1:
+                result += gen_swizzle_op(swizzle_op_swizzle1_template,  dimension, util_op_template, op, "bool{d}".format(d = "" if dimension == 1 else dimension), True, False)
+                result += gen_swizzle_op(swizzle1_op_swizzle_template,  dimension, util_op_template, op, "bool{d}".format(d = "" if dimension == 1 else dimension), False, True)
 
     return result
 
@@ -291,12 +331,16 @@ def gen_swizzle_arithmetic_assign() -> str:
         for dimension in range(1, 5):
             result += gen_swizzle_op(swizzle_op_swizzle_assign_template, dimension, util_op_template, op, "target_type_l", True, True, util_assign_op_template)
             result += gen_swizzle_op(swizzle_op_scalar_assign_template,  dimension, util_op_template, op, "target_type_l", True, False, util_assign_op_s_template)
+            if dimension != 1:
+                result += gen_swizzle_op(swizzle_op_swizzle1_assign_template, dimension, util_op_template, op, "target_type_l", True, False, util_assign_op_s_template)
     
     # gen %
     for op in ["%"]:
         for dimension in range(1, 5):
             result += gen_swizzle_op(swizzle_op_swizzle_assign_template, dimension, mod_op_template, op, "target_type_l", True, True, util_assign_op_template)
             result += gen_swizzle_op(swizzle_op_scalar_assign_template,  dimension, mod_op_template, op, "target_type_l", True, False, util_mod_assign_op_s_template)
+            if dimension != 1:
+                result += gen_swizzle_op(swizzle_op_swizzle1_assign_template, dimension, mod_op_template, op, "target_type_l", True, False, util_mod_assign_op_s_template)
 
     return result
 
